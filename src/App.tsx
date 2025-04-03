@@ -14,7 +14,40 @@ import {
 } from "@chakra-ui/react";
 import { HiMenu } from "react-icons/hi";
 import Ventas from "./components/Ventas";
-import Productos from "./components/productos";
+import Productos from "./components/Productos";
+
+const celularesNuevos = [
+  { id: 1, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 2, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 3, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 4, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 5, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 6, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 7, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 8, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 9, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 10, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 11, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 12, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+  { id: 13, modelo: "14 Pro", capacidad: "256GB", stock: 10, color: "Negro", valorNeto: 800, mayorista: 950, minorista: 1100 },
+  { id: 14, modelo: "13", capacidad: "512GB", stock: 5, color: "Verde", valorNeto: 700, mayorista: 850, minorista: 1000 },
+];
+
+const celularesUsados = [
+  { id: 3, modelo: "12", capacidad: "128GB", stock: 4, color: "Azul", valorNeto: 500, mayorista: 650, minorista: 800 },
+  { id: 4, modelo: "15 Pro", capacidad: "256GB", stock: 6, color: "Negro", valorNeto: 900, mayorista: 1050, minorista: 1200 },
+];;
+
+const accesorios = [
+  { id: 1, nombre: "Cargador Rápido", stock: 20 , valorNeto: 700, mayorista: 850, minorista: 1000},
+  { id: 2, nombre: "Funda iPhone 14", stock: 15 , valorNeto: 700, mayorista: 850, minorista: 1000},
+];
+
+const categorias= [
+  {id:1 , nombre: "Celular Usado"},
+  {id:2 , nombre: "Celular Nuevo"},
+  {id:3, nombre: "Accesorio"}
+]
 
 
 function App() {
@@ -24,7 +57,7 @@ function App() {
   return (
     <ChakraProvider>
       <Box bg="#154273" minH="100vh" display="flex" alignItems="center" justifyContent="center">
-        <Box bg="#f4f6f9" w="calc(100% - 30px)" h="calc(100vh - 30px)" borderRadius="lg" boxShadow="lg">
+        <Box bg="#f4f6f9" w="calc(100% - 30px)" h="calc(100vh - 40px)" borderRadius="lg" boxShadow="lg">
           {/* Navbar */}
           <Flex bg="#0E2640" p={4} borderTopRadius="lg" align="center" justify="space-between">
             <Text ml={10} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
@@ -68,8 +101,8 @@ function App() {
 
           {/* Contenido dinámico según activeScreen */}
           <Box p={5}>
-            {activeScreen === "ventas" && <Ventas />}
-            {activeScreen === "productos" && <Productos />}
+            {activeScreen === "ventas" && <Ventas celularesNuevos={celularesNuevos} celularesUsados={celularesUsados} accesorios={accesorios} />}
+            {activeScreen === "productos" && <Productos celularesNuevos={celularesNuevos} celularesUsados={celularesUsados} accesorios={accesorios} categorias={categorias} />}
           </Box>
         </Box>
       </Box>
