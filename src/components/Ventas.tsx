@@ -15,26 +15,26 @@ import {
   RadioGroup,
   Radio,
   HStack,
-  VStack,
   Text,
-  IconButton,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
 import { MdClose } from "react-icons/md";
 
-const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
+const Ventas = ({ productos, modelos }: any) => {
   const [ventas, setVentas] = useState([]);
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
   const [ventaEditando, setVentaEditando] = useState(null);
-
-  const todosLosProductos = [...celularesNuevos, ...celularesUsados, ...accesorios];
+  const [producto, setProducto] = useState("")
 
   const agregarProducto = () => {
-    setProductosSeleccionados([...productosSeleccionados, { id: "", cantidad: 1, tipoVenta: "minorista" }]);
+    setProductosSeleccionados([
+      ...productosSeleccionados,
+      { id: "", cantidad: 1, tipoVenta: "minorista" },
+    ]);
   };
 
   const actualizarProducto = (index, key, value) => {
+    setProducto(value)
     const nuevosProductos = [...productosSeleccionados];
     nuevosProductos[index][key] = value;
     setProductosSeleccionados(nuevosProductos);
@@ -46,22 +46,29 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
 
   const calcularTotal = () => {
     return productosSeleccionados.reduce((total, prod) => {
-      const producto = todosLosProductos.find((p) => p.id == prod.id);
+      const producto = productos.find((p) => p.id == prod.id);
       if (!producto) return total;
       const precio = prod.tipoVenta === "mayorista" ? producto.mayorista : producto.minorista;
-      return total + precio * prod.cantidad;
+      const cantidad = prod.cantidad || 1; // si cantidad es falsy (undefined, null, 0, ""), usa 1
+      return total + precio * cantidad;
     }, 0);
   };
+  
 
   const guardarVenta = () => {
     if (ventaEditando !== null) {
       const ventasActualizadas = ventas.map((venta, index) =>
-        index === ventaEditando ? { fecha, productos: productosSeleccionados, total: calcularTotal() } : venta
+        index === ventaEditando
+          ? { fecha, productos: productosSeleccionados, total: calcularTotal() }
+          : venta
       );
       setVentas(ventasActualizadas);
       setVentaEditando(null);
     } else {
-      setVentas([...ventas, { fecha, productos: productosSeleccionados, total: calcularTotal() }]);
+      setVentas([
+        ...ventas,
+        { fecha, productos: productosSeleccionados, total: calcularTotal() },
+      ]);
     }
     setProductosSeleccionados([]);
   };
@@ -75,6 +82,14 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
 
   const eliminarVenta = (index) => {
     setVentas(ventas.filter((_, i) => i !== index));
+  };
+
+  const obtenerNombreProducto = (producto) => {
+    if (producto.modeloId) {
+      const modelo = modelos.find((m) => m.id === producto.modeloId);
+      return modelo ? `${modelo.nombre} ${producto.capacidad} - ${producto.color}` : "Modelo no encontrado";
+    }
+    return producto.nombre || "Producto sin nombre";
   };
 
   return (
@@ -95,9 +110,9 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
                   value={prod.id}
                   onChange={(e) => actualizarProducto(index, "id", e.target.value)}
                 >
-                  {todosLosProductos.map((producto) => (
+                  {productos.map((producto) => (
                     <option key={producto.id} value={producto.id}>
-                      {producto.modelo || producto.nombre} - Stock: {producto.stock}
+                      {obtenerNombreProducto(producto)} - Stock: {producto.stock}
                     </option>
                   ))}
                 </Select>
@@ -109,13 +124,18 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
                   type="number"
                   value={prod.cantidad}
                   min="1"
-                  onChange={(e) => actualizarProducto(index, "cantidad", parseInt(e.target.value, 10))}
+                  onChange={(e) =>
+                    actualizarProducto(index, "cantidad", parseInt(e.target.value, 10))
+                  }
                 />
               </FormControl>
 
               <FormControl>
                 <FormLabel>Tipo de Venta</FormLabel>
-                <RadioGroup value={prod.tipoVenta} onChange={(value) => actualizarProducto(index, "tipoVenta", value)}>
+                <RadioGroup
+                  value={prod.tipoVenta}
+                  onChange={(value) => actualizarProducto(index, "tipoVenta", value)}
+                >
                   <HStack spacing={4}>
                     <Radio value="minorista">Minorista</Radio>
                     <Radio value="mayorista">Mayorista</Radio>
@@ -123,10 +143,9 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
                 </RadioGroup>
               </FormControl>
 
-              {/* Botón para eliminar el producto */}
               <Button size="sm" colorScheme="red" onClick={() => eliminarProducto(index)}>
-        <MdClose />
-      </Button>
+                <MdClose />
+              </Button>
             </HStack>
           ))}
         </Box>
@@ -135,7 +154,7 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
           <Button onClick={agregarProducto} colorScheme="blue">
             Agregar Producto
           </Button>
-          <Button onClick={guardarVenta} colorScheme="green">
+          <Button isDisabled={productosSeleccionados.length === 0 || producto === ""} onClick={guardarVenta} colorScheme="green">
             {ventaEditando !== null ? "Actualizar Venta" : "Registrar Venta"}
           </Button>
         </HStack>
@@ -158,16 +177,20 @@ const Ventas = ({ celularesNuevos, celularesUsados, accesorios }) => {
               <Th>Acciones</Th>
             </Tr>
           </Thead>
-          <Tbody>
+          <Tbody
+          
+          >
             {ventas.map((venta, index) => (
               <Tr key={index}>
                 <Td>{venta.fecha}</Td>
                 <Td>
                   {venta.productos.map((p, i) => {
-                    const producto = todosLosProductos.find((prod) => prod.id == p.id);
+                    const producto = productos.find((prod) => prod.id == p.id);
                     return (
                       <Box key={i}>
-                        {producto ? producto.modelo || producto.nombre : "Producto eliminado"} x {p.cantidad} ({p.tipoVenta})
+                        {producto
+                          ? `${obtenerNombreProducto(producto)} x ${p.cantidad ? p.cantidad : 1} (${p.tipoVenta})`
+                          : "Producto eliminado"}
                       </Box>
                     );
                   })}
