@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { AnyActionArg, useState } from "react";
 import {
   Button,
   Modal,
@@ -14,7 +14,9 @@ import {
   Select,
   Text,
   Box,
+  Flex,
 } from "@chakra-ui/react";
+import { createProducto } from "../supabase/productos.service";
 
 interface Categoria {
   id: number;
@@ -26,15 +28,9 @@ interface Modelo {
   nombre: string;
 }
 
-interface NewProductProps {
-  isOpen: boolean;
-  onClose: () => void;
-  categorias: Categoria[];
-  productos: [];
-  modelos: Modelo[];
-}
 
-function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProductProps) {
+
+function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchProductos}: any) {
   const [step, setStep] = useState(1);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modelo, setModelo] = useState("");
@@ -42,10 +38,11 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
   const [modeloError, setModeloError] = useState("");
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState("");
-  const [valorNeto, setValorNeto] = useState("");
-  const [mayorista, setMayorista] = useState("");
-  const [minorista, setMinorista] = useState("");
+  const [stock, setStock] = useState();
+  const [valorNeto, setValorNeto] = useState();
+  const [mayorista, setMayorista] = useState();
+  const [minorista, setMinorista] = useState();
+  const [imei, setImei] = useState();
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -53,7 +50,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
     (producto: any) => producto.categoria === 3
   );
 
-  const handleAgregarProducto = () => {
+  const handleAgregarProducto = async () => {
     console.log("entre")
     let validationErrors: { [key: string]: string } = {};
     const modeloFinal = modelo === "Otro" ? modeloOtro : modelo;
@@ -81,6 +78,10 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
       if (!capacidad) {
         validationErrors.capacidad = "La capacidad es obligatoria.";
       }
+      if (!imei) {
+        validationErrors.imei = "El IMEI es obligatorio.";
+      }
+      
     } else {
       if (!nombreAccesorio) {
         validationErrors.nombreAccesorio = "El nombre del accesorio es obligatorio.";
@@ -150,29 +151,16 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
       }
     }
 
-    const nuevoProducto =
-    categoriaSeleccionada === "Accesorio"
-      ? {
-        categoria: categoriaId,
-          nombre: nombreAccesorio,
-          stock,
-          valorNeto,
-          mayorista,
-          minorista,
-        }
-      : {
-        categoria: categoriaId,
-        modeloId: modeloId,
-          modelo: modeloFinal,
-          color,
-          capacidad,
-          stock,
-          valorNeto,
-          mayorista,
-          minorista,
-        };
+   // const nuevoProducto =
+    //categoriaSeleccionada === "Accesorio"
+     // ? 
+      //await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, null ,null , null, nombreAccesorio, imei )
+      //: await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloId, nombreAccesorio, imei )
 
-  console.log("Nuevo producto agregado:", nuevoProducto);
+  //console.log("Nuevo producto agregado:", nuevoProducto);
+
+ await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloId, nombreAccesorio, imei )
+ fetchProductos()
 
   //ACA SE AGREGA EL NUEVO PRODUCTO
   //SI HAY UN NUEVO MODELO SE AGREGA TAMBIEN
@@ -237,6 +225,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
 
           {step === 2 && categoriaSeleccionada !== "Accesorio" && (
             <>
+            <Flex flexDirection={"row"}  gap={6} mb={4}>
               <FormControl>
                 <FormLabel>Modelo</FormLabel>
                 <Select
@@ -284,7 +273,27 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
                   )}
                 </FormControl>
               )}
+              </Flex>
 
+<FormControl isInvalid={!!errors.imei}  mb={4}>
+  <FormLabel>IMEI</FormLabel>
+  <Input
+    value={imei}
+    onChange={(e) => {
+      setImei(e.target.value);
+      setErrors((prev) => ({ ...prev, imei: "" }));
+      if (errors.general) {
+        setErrors((prevErrors) => ({ ...prevErrors, general: "" }));
+      }
+    }}
+  />
+  {errors.imei && (
+    <Text color="red.500" fontSize="sm">
+      {errors.imei}
+    </Text>
+  )}
+</FormControl>
+<Flex flexDirection={"row"}  gap={6}  mb={4}>
 <FormControl isInvalid={!!errors.color}>
   <FormLabel>Color</FormLabel>
   <Input
@@ -318,13 +327,14 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
 />
 
 </FormControl>
+</Flex>
             </>
           )}
 
           {step === 2 && (
             <>
               {categoriaSeleccionada === "Accesorio" && (
-               <FormControl isInvalid={!!errors.nombreAccesorio}>
+               <FormControl isInvalid={!!errors.nombreAccesorio}  mb={4}>
                <FormLabel>Nombre del Accesorio</FormLabel>
                <Input value={nombreAccesorio} onChange={(e) => {
                 setNombreAccesorio(e.target.value)
@@ -342,6 +352,8 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
              </FormControl>
              
               )}
+
+<Flex flexDirection={"row"}  gap={6}  mb={4}> 
 
 <FormControl isInvalid={!!errors.stock}>
   <FormLabel>Stock</FormLabel>
@@ -369,6 +381,8 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
     </Text>
   )}
 </FormControl>
+</Flex>
+<Flex flexDirection={"row"}  gap={6}  mb={4}>
 <FormControl isInvalid={!!errors.minorista}>
   <FormLabel>Precio Minorista</FormLabel>
   <Input type="number" value={minorista} onChange={(e) => {
@@ -394,6 +408,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos }: NewProd
     </Text>
   )}
 </FormControl>
+</Flex>
 
 
             </>
