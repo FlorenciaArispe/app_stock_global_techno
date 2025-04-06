@@ -17,20 +17,7 @@ import Ventas from "./components/Ventas";
 import Productos from "./components/Productos";
 import { deleteProducto, getProductos } from "./supabase/productos.service";
 import supabase from "./supabase/supabase.service";
-
-const modelos_celulares = [
-  { id: 1, nombre: "14 Pro" },
-  { id: 2, nombre: "13" },
-  { id: 3, nombre: "15 Pro" },
-  { id: 4, nombre: "16" },
-  { id: 5, nombre: "13 Pro" },
-  { id: 6, nombre: "14" },
-  { id: 7, nombre: "15" },
-  { id: 8, nombre: "16 pro" },
-  { id: 9, nombre: "16 Pro max" },
-  { id: 10, nombre: "15 pro max" },
-  { id: 11, nombre: "12" }
-];
+import { getModelos } from "./supabase/modelo.service";
 
 const categorias= [
   {id:1 , nombre: "Celular Nuevo"},
@@ -43,15 +30,41 @@ function Dashboard (onLogout : any) {
   const [activeScreen, setActiveScreen] = useState("ventas");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [productos, setProductos]= useState([]);
+  const [modelos, setModelos]= useState([]);
 
-  async function fetchProductos(){
-    const allProducts=await getProductos();
-    setProductos(allProducts)
-    console.log(allProducts)
+  async function fetchProductos() {
+    const { data, error } = await supabase.from('productos').select('*');
+    
+    if (error) {
+      if (error.message === "JWT expired") {
+        await supabase.auth.signOut();
+        return;
+      }
+      console.error(error);
+    }
+    
+    setProductos(data || []);
   }
+  
+  async function fetchModelos() {
+    const { data, error } = await supabase.from('Modelo_celular').select('*');
+  
+    if (error) {
+      if (error.message === "JWT expired") {
+        await supabase.auth.signOut();
+        return;
+      }
+      console.error(error);
+    }
+  
+    setModelos(data || []);
+  }
+  
 
   useEffect(() =>{
     fetchProductos()
+    fetchModelos()
+
   } , [])
 
   const handleDeleteProduct = async (id : number)=>{
@@ -112,8 +125,8 @@ Cerrar sesión
           </Drawer>
 
           <Box p={5}>
-            {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos_celulares} />}
-            {activeScreen === "productos" && <Productos productos={productos} categorias={categorias} modelos={modelos_celulares} onDelete={handleDeleteProduct} fetchProductos={fetchProductos} />}
+            {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} />}
+            {activeScreen === "productos" && <Productos productos={productos} categorias={categorias} modelos={modelos} onDelete={handleDeleteProduct} fetchProductos={fetchProductos} fetchModelos={fetchModelos} />}
           </Box>
         </Box>
       //</Box>

@@ -26,15 +26,17 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
-import { FaDollarSign } from "react-icons/fa";
 import NewProduct from "./NewProduct";
+import EditProduct from "./EditProduct";
 
-function Productos({ productos, categorias, modelos , onDelete , fetchProductos }: any) {
+function Productos({ productos, categorias, modelos , onDelete , fetchProductos , fetchModelos }: any) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
   const [filaExpandida, setFilaExpandida] = useState<number | null>(null);
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
   const celulares = productos.filter((producto: any) =>
     tipoCelulares === "nuevos"
@@ -46,24 +48,24 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
     (producto: any) => producto.categoria === 3
   );
 
-  console.log("modelos",modelos)
-
   const toggleExpandirFila = (id: number) => {
     setFilaExpandida(filaExpandida === id ? null : id);
   };
-
-  
 
   const handleDeleteConfirm = () => {
     onDelete(selectedProductId)
   }
 
-  // 🔍 Función para obtener el nombre del modelo
   const obtenerNombreModelo = (modeloId: number) => {
-    console.log("modeloid",modeloId)
     const modelo = modelos.find((m: any) => m.id === modeloId);
     return modelo ? modelo.nombre : "null";
   };
+
+  function handleEditarProducto(producto: any) {
+    console.log("producto seleccionado",producto)
+    setProductoSeleccionado(producto);
+    setIsModalUpdateOpen(true);
+  }
 
   return (
     <Box>
@@ -112,12 +114,11 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
       <Thead bg="gray.100">
         <Tr>
          
-          <Th>Modelo</Th>
-          <Th>Color</Th>
-          <Th>Capacidad</Th>
-          <Th>Stock</Th>
-          <Th textAlign="center">IMEI</Th>
-          <Th>Acciones</Th>
+          <Th textAlign={"center"}>Modelo</Th>
+          <Th textAlign={"center"}>Color</Th>
+          <Th textAlign={"center"}>Capacidad</Th>
+          <Th  textAlign={"center"}>Stock</Th>
+          <Th textAlign={"center"}>Acciones</Th>
         
    
         </Tr>
@@ -130,18 +131,18 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
               <Td  p={1} textAlign={"center"}>{producto.color}</Td>
               <Td  p={1} textAlign={"center"}>{producto.capacidad}</Td>
               <Td  p={1} textAlign={"center"}>{producto.stock}</Td>
-             <Td p={1} textAlign={"center"}>{producto.imei}</Td>
               <Td  textAlign={"center"}>
                 <Flex justifyContent={"center"} gap={2}>
-                <Tooltip label={"Editar"}> 
-                  <IconButton
-                    icon={<MdEdit />}
-                    aria-label="Editar"
-                    size="sm"
-                    color="blue.500"
-                    variant="ghost"
-                  />
-                  </Tooltip>
+                <Tooltip label={"Editar"}>
+      <IconButton
+        icon={<MdEdit />}
+        aria-label="Editar"
+        size="sm"
+        color="blue.500"
+        variant="ghost"
+        onClick={() => handleEditarProducto(producto)} 
+      />
+    </Tooltip>
                   <Tooltip label={"Eliminar"}>  
                   <IconButton
   icon={<MdDelete />}
@@ -203,14 +204,15 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
 
         {/* Card de Accesorios */}
         <Card
-          w="50%"
-          minH={"500px"}
-          maxH={"500px"}
-          bg="white"
-          boxShadow="lg"
-          borderRadius="md"
-          overflow="hidden"
-        >
+  w="50%"
+  minH={"500px"}
+  maxH={"500px"}
+  bg="white"
+  boxShadow="lg"
+  borderRadius="md"
+  overflow="hidden"
+ 
+>
           <CardHeader>
             <Text fontSize="20px" fontWeight="bold">
               Accesorios
@@ -220,37 +222,81 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
             <Table variant="simple">
               <Thead bg="gray.100">
                 <Tr>
-                  <Th>ID</Th>
-                  <Th>Nombre</Th>
-                  <Th>Stock</Th>
-                  <Th>Acciones</Th>
+                  <Th  textAlign={"center"}>ID</Th>
+                  <Th textAlign={"center"}>Nombre</Th>
+                  <Th textAlign={"center"}>Stock</Th>
+                  <Th textAlign={"center"}>Acciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {accesoriosFiltrados.map((accesorio: any) => (
+                   <Fragment key={accesorio.id}>
                   <Tr key={accesorio.id}>
-                    <Td>{accesorio.id}</Td>
-                    <Td>{accesorio.nombre}</Td>
-                    <Td>{accesorio.stock}</Td>
-                    <Td>
-                      <Flex gap={2}>
-                        <IconButton
-                          icon={<MdEdit />}
-                          aria-label="Editar"
-                          size="sm"
-                          color="blue.500"
-                          variant="ghost"
-                        />
-                        <IconButton
-                          icon={<MdDelete />}
-                          aria-label="Eliminar"
-                          size="sm"
-                          color="red.500"
-                          variant="ghost"
-                        />
-                      </Flex>
-                    </Td>
+                    <Td  textAlign={"center"}>{accesorio.id}</Td>
+                    <Td  textAlign={"center"}>{accesorio.nombre}</Td>
+                    <Td  textAlign={"center"}>{accesorio.stock}</Td>
+                    <Td  textAlign={"center"}>
+                <Flex justifyContent={"center"} gap={2}>
+                <Tooltip label={"Editar"}> 
+                  <IconButton
+                    icon={<MdEdit />}
+                    aria-label="Editar"
+                    size="sm"
+                    color="blue.500"
+                    variant="ghost"
+                  />
+                  </Tooltip>
+                  <Tooltip label={"Eliminar"}>  
+                  <IconButton
+  icon={<MdDelete />}
+  onClick={() => {
+    setSelectedProductId(accesorio.id);
+    onOpen(); 
+  }}
+  aria-label="Eliminar"
+  size="sm"
+  color="red.500"
+  variant="ghost"
+/>
+</Tooltip>
+<Tooltip label={"Precios"}>  
+<IconButton
+                  icon={
+                    filaExpandida === accesorio.id ? (
+                      <MdExpandLess />
+                    ) : (
+                      <MdExpandMore />
+                    )
+                  }
+                  aria-label="Expandir"
+                  size="sm"
+                  color="gray.600"
+                  variant="ghost"
+                  onClick={() => toggleExpandirFila(accesorio.id)}
+                />
+</Tooltip>
+
+                </Flex>
+              </Td>
                   </Tr>
+                   {filaExpandida === accesorio.id && (
+                    <Tr>
+                      <Td colSpan={7} bg="gray.50">
+                        <Flex justify="space-around" py={2} flexWrap="wrap">
+                          <Text>
+                            <strong>Valor Neto:</strong> ${accesorio.valorNeto}
+                          </Text>
+                          <Text>
+                            <strong>Mayorista:</strong> ${accesorio.mayorista}
+                          </Text>
+                          <Text>
+                            <strong>Minorista:</strong> ${accesorio.minorista}
+                          </Text>
+                        </Flex>
+                      </Td>
+                    </Tr>
+                  )}
+                </Fragment>
                 ))}
               </Tbody>
             </Table>
@@ -258,7 +304,22 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
         </Card>
       </Flex>
 
-      {isModalOpen && (
+      {isModalUpdateOpen && (
+ <EditProduct
+ isOpen={isModalUpdateOpen}
+ onClose={() => {
+  setIsModalUpdateOpen(false);
+   setProductoSeleccionado(null);
+ }}
+ producto={productoSeleccionado}
+ categorias={categorias}
+ modelos={modelos}
+ fetchProductos={fetchProductos}
+ fetchModelos={fetchModelos}
+/>
+)}
+
+{isModalOpen && (
         <NewProduct
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -269,6 +330,7 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
           
         />
       )}
+
 
 <Modal isOpen={isOpen} onClose={onClose} isCentered>
   <ModalOverlay />
