@@ -57,7 +57,7 @@ export default function Login({ onLogin }: LoginProps) {
 
   return (
      <Box minH="100vh" bg="#0E2640" display="flex" alignItems="center" justifyContent="center">
-      <Box bg="white"  borderRadius="25px" boxShadow="lg" w={{ base: '90%', md: '750px' }}>
+      <Box bg="white"  borderRadius="25px" boxShadow="lg" w={{ base: '350px', md: '450px' , lg: '850px'}}>
 
         
         <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="center">
@@ -66,11 +66,12 @@ export default function Login({ onLogin }: LoginProps) {
           <Box flex="1" p={4}>
             <VStack p={4} spacing={6} as="form" onSubmit={handleLogin}>
             <Heading 
-        size="100%" 
-        color="#154273" 
-        display={{ base: 'block', md: 'none' }}
+        size="lg" 
+        color="#345070" 
+        fontWeight={700}
+      /*  display={{ base: 'block', md: 'none' }}*/
       >
-        GLOBAL TECHNOLOGY
+        Sign in
       </Heading>
 
               <FormControl isRequired>
@@ -117,9 +118,7 @@ export default function Login({ onLogin }: LoginProps) {
               </Button>
             </VStack>
           </Box>
-
-          {/* Sección del logo */}
-          <Box flex="1" display="flex" alignItems="center" justifyContent="center"  display={{ base: 'none', md: 'flex' }}>
+          <Box flex="1" alignItems="center" justifyContent="center"  display={{ base: 'none', md: 'none', lg: 'flex' }}>
             <Image
               src="/logo.jpeg" 
               alt="Logo Global Technology"

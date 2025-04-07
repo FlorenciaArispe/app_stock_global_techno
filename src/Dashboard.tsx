@@ -77,7 +77,7 @@ function Dashboard (onLogout : any) {
     //<ChakraProvider>
      // <Box bg="#154273" minH="100vh" display="flex" alignItems="center" justifyContent="center">
         <Box bg="gray.100" h={"100vh"}>
-          <Flex bg="gray.800" p={4} align="center" justify="space-between">
+          <Flex bg="gray.800" p={4} align="center" justify="space-between" w={"100%"}>
             <Text ml={10} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
               Stock Global Technology
             </Text>
@@ -129,7 +129,7 @@ Cerrar sesión
             </DrawerOverlay>
           </Drawer>
 
-          <Box p={5}>
+          <Box p={5} bg={"gray.100"}>
             {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} />}
             {activeScreen === "productos" && <Productos productos={productos} categorias={categorias} modelos={modelos} onDelete={handleDeleteProduct} fetchProductos={fetchProductos} fetchModelos={fetchModelos} />}
           </Box>

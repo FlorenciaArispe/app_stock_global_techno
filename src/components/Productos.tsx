@@ -28,6 +28,8 @@ import {
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 import NewProduct from "./NewProduct";
 import EditProduct from "./EditProduct";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { updateStockProducto } from "../supabase/productos.service";
 
 function Productos({ productos, categorias, modelos , onDelete , fetchProductos , fetchModelos }: any) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
@@ -67,6 +69,15 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
     setIsModalUpdateOpen(true);
   }
 
+ const actualizarStock = async (id, stockNuevo ) =>{
+  console.log("ID Y STOCK", id, stockNuevo)
+
+  const res= await updateStockProducto(id, stockNuevo)
+  console.log(res)
+  fetchProductos()
+
+ }
+
   return (
     <Box bg={"gray.100"} >
       <Flex mb={5}>
@@ -79,13 +90,13 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
   gap={6}
   justify="center"
   align="start"
-  flexDirection={{ base: "column", md: "row" }} 
+  flexDirection={{ base: "column", md: "column", lg:"row" }} 
 >
 
   {/* Card de Celulares */}
   <Card
-    w={{ base: "100%", md: "50%" }} // <-- ancho responsivo
-    minH="500px"
+    w={{ base: "100%", md: "100%", lg: "50%" }} 
+
     maxH="500px"
     bg="white"
     boxShadow="lg"
@@ -135,7 +146,24 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
               <Td  textAlign={"center"} isTruncated>{obtenerNombreModelo(producto.modeloId)}</Td>
               <Td  p={1} textAlign={"center"}>{producto.color}</Td>
               <Td  p={1} textAlign={"center"}>{producto.capacidad}</Td>
-              <Td  p={1} textAlign={"center"}>{producto.stock}</Td>
+              <Td textAlign="center">
+              <Flex justifyContent="center" alignItems="center" gap={2}>
+                <IconButton
+                  icon={<MinusIcon />}
+                  aria-label="Disminuir stock"
+                  size="sm"
+                  onClick={() => actualizarStock(producto.id, producto.stock - 1)}
+                  isDisabled={producto.stock <= 0}
+                />
+                {producto.stock}
+                <IconButton
+                  icon={<AddIcon />}
+                  aria-label="Aumentar stock"
+                  size="sm"
+                 onClick={() => actualizarStock(producto.id, producto.stock + 1)}
+                />
+              </Flex>
+            </Td>
               <Td  textAlign={"center"}>
                 <Flex justifyContent={"center"} gap={2}>
                 <Tooltip label={"Editar"}>
@@ -209,8 +237,7 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
 
         {/* Card de Accesorios */}
         <Card
-    w={{ base: "100%", md: "50%" }} // <-- ancho responsivo
-    minH="500px"
+   w={{ base: "100%", md: "100%", lg: "50%" }} 
     maxH="500px"
     bg="white"
     boxShadow="lg"
