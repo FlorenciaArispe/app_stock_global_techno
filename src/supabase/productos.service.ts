@@ -70,4 +70,20 @@ async function updateProducto(id: number, data: any) {
   }
 }
 
-export { getProductos, deleteProducto, createProducto, updateProducto };
+async function updateStockProducto(id, nuevoStock) {
+  const { error } = await supabase
+    .from('productos')
+    .update({ stock: nuevoStock })
+    .eq('id', id);
+
+  if (error) {
+    if (error.message === 'JWT expired') {
+      await supabase.auth.signOut();
+      return;
+    }
+    throw error;
+  }
+}
+
+
+export { getProductos, deleteProducto, createProducto, updateProducto , updateStockProducto};

@@ -21,10 +21,10 @@ function EditProduct({ isOpen, onClose, categorias, modelos, fetchProductos, pro
   const [modelo, setModelo] = useState<number | undefined>();
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState<number>(0);
-  const [valorNeto, setValorNeto] = useState<number>(0);
-  const [mayorista, setMayorista] = useState<number>(0);
-  const [minorista, setMinorista] = useState<number>(0);
+  const [stock, setStock] = useState<number>();
+  const [valorNeto, setValorNeto] = useState<number>();
+  const [mayorista, setMayorista] = useState<number>();
+  const [minorista, setMinorista] = useState<number>();
 
   useEffect(() => {
     if (producto) {
