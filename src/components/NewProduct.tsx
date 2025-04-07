@@ -34,10 +34,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const accesoriosFiltrados = productos.filter(
-    (producto: any) => producto.categoria === 3
-  );
-
   const handleAgregarProducto = async () => {
     console.log("entre")
     let validationErrors: { [key: string]: string } = {};
@@ -127,16 +123,20 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
     }
 
  await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloFinal, nombreAccesorio )
- fetchProductos()
- fetchModelos()
-
+ await fetchProductos()
+ 
+ onClose();
+ await fetchModelos()
    setErrors({});
    setStep(1);
    setModeloOtro("");
    setModeloError("");
-   onClose();
+  
   
   };
+
+
+  
 
   const tituloModal = categoriaSeleccionada ? `Agregar ${categoriaSeleccionada}` : "Agregar Nuevo Producto";
 
@@ -256,19 +256,23 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
 
 <FormControl isInvalid={!!errors.capacidad}>
   <FormLabel>Capacidad</FormLabel>
-  <Input
-  value={capacidad}
-  onChange={(e) => {
-    setCapacidad(e.target.value);
-    setErrors((prev) => ({ ...prev, capacidad: "" }));
-    if (errors.general) {
-      console.log("entre")
-      setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-    }
-  }}
-/>
-
+  <Select
+    placeholder="Selecciona "
+    value={capacidad}
+    onChange={(e) => {
+      setCapacidad(e.target.value);
+      setErrors((prev) => ({ ...prev, capacidad: "" }));
+      if (errors.general) {
+        console.log("entre");
+        setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
+      }
+    }}
+  >
+    <option value="128GB">128GB</option>
+    <option value="256GB">256GB</option>
+  </Select>
 </FormControl>
+
 </Flex>
             </>
           )}

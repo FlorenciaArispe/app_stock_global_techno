@@ -76,8 +76,8 @@ function Dashboard (onLogout : any) {
   return (
     //<ChakraProvider>
      // <Box bg="#154273" minH="100vh" display="flex" alignItems="center" justifyContent="center">
-        <Box bg="#f4f6f9" w="calc(100% - 30px)" h="calc(100vh - 40px)" borderRadius="lg" boxShadow="lg">
-          <Flex bg="#154273" p={4} borderTopRadius="lg" align="center" justify="space-between">
+        <Box bg="gray.100" h={"100vh"}>
+          <Flex bg="gray.800" p={4} align="center" justify="space-between">
             <Text ml={10} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
               Stock Global Technology
             </Text>
@@ -109,7 +109,7 @@ Cerrar sesión
 
           <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
             <DrawerOverlay>
-              <DrawerContent bg="#0E2640">
+              <DrawerContent bg="gray.800">
                 <DrawerBody>
                   <Button w="100%" mb={4} variant="ghost" color="white" fontWeight="bold"
                     onClick={() => { setActiveScreen("ventas"); onClose(); }}>
@@ -119,6 +119,11 @@ Cerrar sesión
                     onClick={() => { setActiveScreen("productos"); onClose(); }}>
                     Productos
                   </Button>
+                  <Button w="100%" variant="ghost" color="white" fontWeight="bold"
+                     onClick={() => supabase.auth.signOut()}>
+                    Cerrar sesión
+                  </Button>
+                 
                 </DrawerBody>
               </DrawerContent>
             </DrawerOverlay>

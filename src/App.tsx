@@ -21,13 +21,13 @@ function App() {
 
   return (
     <ChakraProvider>
-      <Box bg="#0E2640" minH="100vh" display="flex" alignItems="center" justifyContent="center">
+
         {session ? (
           <Dashboard onLogout={() => supabase.auth.signOut()} />
         ) : (
           <Login onLogin={setSession} />
         )}
-      </Box>
+
     </ChakraProvider>
   );
 }
