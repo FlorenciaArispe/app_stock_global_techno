@@ -68,25 +68,30 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
   }
 
   return (
-    <Box>
-      <Flex justify="left" mb={4}>
+    <Box bg={"gray.100"} >
+      <Flex mb={5}>
         <Button colorScheme="green" onClick={() => setIsModalOpen(true)}>
           Agregar Producto
         </Button>
       </Flex>
 
-      <Flex gap={6} mb={6} justify="center" align="start" flexWrap="nowrap">
-        {/* Card de Celulares */}
-        <Card
-  w="50%"
-  minH={"500px"}
-  maxH={"500px"}
-  bg="white"
-  boxShadow="lg"
-  borderRadius="md"
-  overflow="hidden"
- 
+      <Flex
+  gap={6}
+  justify="center"
+  align="start"
+  flexDirection={{ base: "column", md: "row" }} 
 >
+
+  {/* Card de Celulares */}
+  <Card
+    w={{ base: "100%", md: "50%" }} // <-- ancho responsivo
+    minH="500px"
+    maxH="500px"
+    bg="white"
+    boxShadow="lg"
+    borderRadius="md"
+    overflow="hidden"
+  >
   <CardHeader>
     <Flex justify="space-between" align="center">
       <Text fontSize="20px" fontWeight="bold">
@@ -204,15 +209,14 @@ function Productos({ productos, categorias, modelos , onDelete , fetchProductos 
 
         {/* Card de Accesorios */}
         <Card
-  w="50%"
-  minH={"500px"}
-  maxH={"500px"}
-  bg="white"
-  boxShadow="lg"
-  borderRadius="md"
-  overflow="hidden"
- 
->
+    w={{ base: "100%", md: "50%" }} // <-- ancho responsivo
+    minH="500px"
+    maxH="500px"
+    bg="white"
+    boxShadow="lg"
+    borderRadius="md"
+    overflow="hidden"
+  >
           <CardHeader>
             <Text fontSize="20px" fontWeight="bold">
               Accesorios
