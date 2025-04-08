@@ -56,23 +56,23 @@ export default function Login({ onLogin }: LoginProps) {
   }
 
   return (
-     <Box minH="100vh" bg="#0E2640" display="flex" alignItems="center" justifyContent="center">
-      <Box bg="white"  borderRadius="25px" boxShadow="lg" w={{ base: '350px', md: '450px' , lg: '850px'}}>
+    <Box minH="100vh" bg="#0E2640" display="flex" alignItems="center" justifyContent="center">
+      <Box bg="white" borderRadius="25px" boxShadow="lg" w={{ base: '350px', md: '450px', lg: '850px' }}>
 
-        
+
         <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="center">
-          
+
           {/* Sección de inputs */}
           <Box flex="1" p={4}>
             <VStack p={4} spacing={6} as="form" onSubmit={handleLogin}>
-            <Heading 
-        size="lg" 
-        color="#345070" 
-        fontWeight={700}
-      /*  display={{ base: 'block', md: 'none' }}*/
-      >
-        Sign in
-      </Heading>
+              <Heading
+                size="lg"
+                color="#345070"
+                fontWeight={700}
+              /*  display={{ base: 'block', md: 'none' }}*/
+              >
+                Sign in
+              </Heading>
 
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
@@ -85,25 +85,25 @@ export default function Login({ onLogin }: LoginProps) {
               </FormControl>
 
               <FormControl isRequired>
-  <FormLabel>Contraseña</FormLabel>
-  <InputGroup>
-    <Input
-      type={showPassword ? 'text' : 'password'}
-      placeholder="Ingresá tu contraseña"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
-    <InputRightElement>
-      <IconButton
-        variant="ghost"
-        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-        icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-        onClick={() => setShowPassword(!showPassword)}
-        size="sm"
-      />
-    </InputRightElement>
-  </InputGroup>
-</FormControl>
+                <FormLabel>Contraseña</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Ingresá tu contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <InputRightElement>
+                    <IconButton
+                      variant="ghost"
+                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                      onClick={() => setShowPassword(!showPassword)}
+                      size="sm"
+                    />
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
 
               {error && <Text color="red.500">{error}</Text>}
 
@@ -118,20 +118,21 @@ export default function Login({ onLogin }: LoginProps) {
               </Button>
             </VStack>
           </Box>
-          <Box flex="1" alignItems="center" justifyContent="center"  display={{ base: 'none', md: 'none', lg: 'flex' }}>
+          <Box flex="1" alignItems="center" justifyContent="center" display={{ base: 'none', md: 'none', lg: 'flex' }} bg={"black"}>
             <Image
-              src="/logo.jpeg" 
+              src="/logo.jpeg"
               alt="Logo Global Technology"
-              boxSize={{ base: '150px', md: '100%' }}
+              boxSize={{ base: '100%', md: '100%' }}
               objectFit="contain"
-                borderTopRightRadius="23px"
-                borderBottomRightRadius="23px"
-                 borderBottomLeftRadius="50px"
+              borderTopRightRadius="23px"
+              borderBottomRightRadius="23px"
+              borderBottomLeftRadius="50px"
+
             />
           </Box>
 
         </Flex>
       </Box>
-   </Box>
+    </Box>
   )
 }
