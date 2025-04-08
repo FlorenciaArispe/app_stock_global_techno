@@ -1,7 +1,10 @@
 import supabase from "./supabase.service";
 
 async function getProductos() {
-  const { data, error } = await supabase.from("productos").select();
+  const { data, error } = await supabase
+    .from("productos")
+    .select()
+    .order('id', { ascending: true });
   if (error) {
     if (error.message === "JWT expired") {
       await supabase.auth.signOut();
@@ -9,6 +12,7 @@ async function getProductos() {
     }
     throw error;
   }
+
   return data;
 }
 

@@ -95,7 +95,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
 
         {/* Card de Celulares */}
         <Card
-          w={{ base: "100%", md: "100%", lg: "50%" }}
+          w={{ base: "100%", md: "100%", lg: "100%" , xl: "row"}}
 
           maxH="500px"
           bg="white"
@@ -237,7 +237,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
 
         {/* Card de Accesorios */}
         <Card
-          w={{ base: "100%", md: "100%", lg: "50%" }}
+          w={{ base: "100%", md: "100%", lg: "100%" , xl: "row"}}
           maxH="500px"
           bg="white"
           boxShadow="lg"
@@ -275,6 +275,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                               size="sm"
                               color="blue.500"
                               variant="ghost"
+                              onClick={() => handleEditarProducto(accesorio)}
                             />
                           </Tooltip>
                           <Tooltip label={"Eliminar"}>
@@ -358,6 +359,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           productos={productos}
           modelos={modelos}
           fetchProductos={fetchProductos}
+          fetchModelos={fetchModelos}
 
         />
       )}

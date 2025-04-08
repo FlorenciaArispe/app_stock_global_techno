@@ -99,8 +99,7 @@ const Ventas = ({ productos, modelos }: any) => {
           <FormLabel>Fecha de Venta</FormLabel>
           <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
         </FormControl>
-
-        <Box maxHeight="250px" overflowY="auto" p={2} border="1px solid #ddd" borderRadius="md" mb={3}>
+        <Box maxHeight="250px" overflowY="auto" p={2}  borderWidth={productosSeleccionados.length > 0 ? "1px" : "0"} borderColor="gray.200" borderRadius="md" mb={3}>
           {productosSeleccionados.map((prod, index) => (
             <HStack key={index} spacing={4} align="start" p={3} borderBottom="1px solid #ddd">
               <FormControl>

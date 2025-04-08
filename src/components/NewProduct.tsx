@@ -15,6 +15,7 @@ import {
   Text,
   Box,
   Flex,
+  useToast,
 } from "@chakra-ui/react";
 import { createProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
@@ -32,18 +33,16 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
   const [mayorista, setMayorista] = useState();
   const [minorista, setMinorista] = useState();
   const [nombreAccesorio, setNombreAccesorio] = useState("");
+  const toast = useToast();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleAgregarProducto = async () => {
-    console.log("entre")
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal;
 
     if(modelo==="Otro"){
-      console.log("entre por modelo OTRO", modeloOtro)
      const res= await createModelo(modeloOtro)
        modeloFinal=res;
-      console.log("RESPUESTA ID DE NUEVO MODELO",res)
     }
     else{
       const modeloObj= modelos.find((mod) => mod.nombre === modelo)
@@ -110,7 +109,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
         );
       });
 
-  
       if (productoDuplicado) {
         setErrors({
           ...validationErrors,
@@ -122,19 +120,40 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
       }
     }
 
- await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloFinal, nombreAccesorio )
- await fetchProductos()
- 
- onClose();
- await fetchModelos()
-   setErrors({});
-   setStep(1);
-   setModeloOtro("");
-   setModeloError("");
+    try{    
   
-  
-  };
+   await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloFinal, nombreAccesorio )
+   await fetchProductos()
+   
+   onClose();
+   await fetchModelos()
+     setErrors({});
+     setStep(1);
+     setModeloOtro("");
+     setModeloError("");
+    
+     toast({
+      title: "Producto agregado",
+      description: "El producto se ha creado correctamente.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    })
+    }
+    
+catch (error) {
 
+
+    // Mostrar notificación de error
+    toast({
+      title: "Error",
+      description: "Hubo un problema al crear el producto. Inténtelo nuevamente.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    } 
+    )}
+  }
 
   
 
@@ -153,7 +172,9 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
   return (
     <Modal isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+      mt={{ base: '0', md:'2', lg: '20' }}
+      >
         <ModalHeader>{tituloModal}</ModalHeader>
         <ModalCloseButton />
 

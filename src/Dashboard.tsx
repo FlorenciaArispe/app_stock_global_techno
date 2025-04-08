@@ -42,6 +42,7 @@ function Dashboard (onLogout : any) {
       }
       console.error(error);
     }
+    console.log("PRODUCTOS",data)
     
     setProductos(data || []);
   }
