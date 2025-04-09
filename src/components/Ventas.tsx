@@ -5,6 +5,7 @@ import {
   HStack, Text, useToast,
   VStack,
   useDisclosure,
+  Flex,
 } from "@chakra-ui/react";
 import { MdClose } from "react-icons/md";
 import { createVenta, deleteVenta, updateVenta } from "../supabase/ventas.service";
@@ -13,6 +14,7 @@ import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
 const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [fecha_venta, setFecha] = useState(new Date().toISOString().split("T")[0]);
+  const [cliente, setCliente]= useState("");
   const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedVentaId, setSelectedVentaId] = useState();
@@ -64,6 +66,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
 
       await createVenta({
         fecha_venta,
+        cliente,
         productos: productosFormateados, 
         total,
       });
@@ -134,6 +137,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
     try {
       await updateVenta(ventaEditando, {
         fecha_venta,
+        cliente,
         productos: productosFormateados,
         total,
       });
@@ -145,7 +149,6 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
         isClosable: true,
       });
   
-      // Limpieza
       setVentaEditando(null);
       setProductosSeleccionados([]);
       setFecha(new Date().toISOString().split("T")[0]);
@@ -195,10 +198,16 @@ const handleDeleteConfirm = () => {
   return (
     <Box p={5}>
       <Box bg="white" p={5} borderRadius="md" boxShadow="md" mb={5}>
+        <Flex flexDirection={"row"} gap={6}>
         <FormControl mb={4}>
           <FormLabel>Fecha de Venta</FormLabel>
           <Input type="date" value={fecha_venta} onChange={(e) => setFecha(e.target.value)} />
         </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Cliente</FormLabel>
+          <Input type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+        </FormControl>
+        </Flex>
 
         <Box maxHeight="250px" overflowY="auto" p={2} borderWidth={productosSeleccionados.length > 0 ? "1px" : "0"} borderColor="gray.200" borderRadius="md" mb={3}>
           {productosSeleccionados.map((prod, index) => (
@@ -295,6 +304,7 @@ const handleDeleteConfirm = () => {
       <Thead position="sticky" top={0} bg="white" zIndex={1}>
         <Tr >
           <Th fontSize={"15px"}>Fecha</Th>
+          <Th fontSize={"15px"}>Cliente</Th>
           <Th fontSize={"15px"}>Productos</Th>
           <Th fontSize={"15px"}>Total</Th>
           <Th fontSize={"15px"}>Acciones</Th>
@@ -302,8 +312,9 @@ const handleDeleteConfirm = () => {
       </Thead>
       <Tbody>
         {ventas?.map((venta, index) => (
-          <Tr key={index} height="60px">
+          <Tr key={index} height="60px">              
             <Td>{new Date(venta.fecha_venta).toLocaleDateString("es-AR")}</Td>
+            <Td>{venta.cliente || "Sin registro"}</Td>
             <Td>
               {venta.productos.map((p, i) => (
                 <Box key={i} mb={2} mt={1}>

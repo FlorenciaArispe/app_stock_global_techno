@@ -2,7 +2,8 @@ import supabase from "./supabase.service";
 
 export type Venta = {
     id?: number;
-    fecha_venta: string; // formato ISO (ej: "2025-04-08")
+    fecha_venta: string; 
+    cliente: string;
     productos: ProductoVenta[];
     total: number;
   };
