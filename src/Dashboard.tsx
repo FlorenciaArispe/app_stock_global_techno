@@ -92,7 +92,7 @@ function Dashboard(onLogout: any) {
         <Text ml={10} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
           Stock Global Technology
         </Text>
-        <Flex display={{ base: "none", md: "flex" }} gap={4}>
+        <Flex display={{ base: "none", md: "flex" }} gap={1} >
           <Button variant="ghost" color="white" fontWeight="bold"
             _hover={{ bg: "gray.700" }} _active={{ bg: "gray.300", color: "black" }}
             onClick={() => setActiveScreen("ventas")} isActive={activeScreen === "ventas"}>

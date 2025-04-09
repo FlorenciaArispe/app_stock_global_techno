@@ -118,7 +118,7 @@ export default function Login({ onLogin }: LoginProps) {
               </Button>
             </VStack>
           </Box>
-          <Box flex="1" alignItems="center" justifyContent="center" display={{ base: 'none', md: 'none', lg: 'flex' }} bg={"black"}>
+          <Box flex="1" alignItems="center" justifyContent="center" display={{ base: 'none', md: 'none', lg: 'flex' }}>
             <Image
               src="/logo.jpeg"
               alt="Logo Global Technology"
