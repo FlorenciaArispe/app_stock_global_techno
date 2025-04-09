@@ -6,8 +6,10 @@ import {
   VStack,
   useDisclosure,
   Flex,
+  Tooltip,
+  IconButton,
 } from "@chakra-ui/react";
-import { MdClose } from "react-icons/md";
+import { MdClose, MdDelete, MdEdit } from "react-icons/md";
 import { createVenta, deleteVenta, updateVenta } from "../supabase/ventas.service";
 import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
 
@@ -306,8 +308,8 @@ const handleDeleteConfirm = () => {
           <Th fontSize={"15px"}>Fecha</Th>
           <Th fontSize={"15px"}>Cliente</Th>
           <Th fontSize={"15px"}>Productos</Th>
-          <Th fontSize={"15px"}>Total</Th>
-          <Th fontSize={"15px"}>Acciones</Th>
+          <Th textAlign={"center"} fontSize={"15px"}>Total</Th>
+          <Th textAlign={"center"} fontSize={"15px"}>Acciones</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -327,27 +329,30 @@ const handleDeleteConfirm = () => {
                 </Box>
               ))}
             </Td>
-            <Td>${venta.total}</Td>
+            <Td textAlign={"center"}>${venta.total}</Td>
             <Td>
-  <Button
-    size="xs"
-    colorScheme="yellow"
-    onClick={() => editarVenta(venta)}
-  >
-    Editar
-  </Button>
-  <Button
-    size="xs"
-    colorScheme="red"
-    ml={2}
-    onClick={() => {
-      setSelectedVentaId(venta.id);
-      onOpen();
-    }}
-
-  >
-    Eliminar
-  </Button>
+ <Flex justifyContent={"center"} gap={2}>
+                          <Tooltip label={"Editar"}>
+                            <IconButton
+                              icon={<MdEdit />}
+                              aria-label="Editar"
+                              size="sm"
+                              color="blue.500"
+                              variant="ghost"
+                              onClick={() => editarVenta(venta)}
+                            />
+                          </Tooltip>
+                          <Tooltip label={"Eliminar"}>
+                            <IconButton
+                              icon={<MdDelete />}
+                              onClick={() => editarVenta(venta)}
+                              aria-label="Eliminar"
+                              size="sm"
+                              color="red.500"
+                              variant="ghost"
+                            />
+                          </Tooltip>
+                          </Flex>
 </Td>
 
           </Tr>

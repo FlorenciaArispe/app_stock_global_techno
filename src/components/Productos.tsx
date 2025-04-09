@@ -24,6 +24,7 @@ import {
   ModalBody,
   ModalFooter,
   Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 import NewProduct from "./NewProduct";
@@ -40,6 +41,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const celulares = productos.filter((producto: any) =>
     tipoCelulares === "nuevos"
@@ -92,144 +94,171 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         flexDirection={{ base: "column", md: "column", lg: "column", xl: "row" }}
       >
         {/* Card de Celulares */}
-        <Card
-          w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
+       
+  {!isMobile ? (
+    <Card
+    w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
 
-          maxH="500px"
-          bg="white"
-          boxShadow="lg"
-          borderRadius="md"
-          overflow="hidden"
-        >
-          <CardHeader>
-            <Flex justify="space-between" align="center">
-              <Text fontSize="20px" fontWeight="bold">
-                Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
-              </Text>
-              <ButtonGroup isAttached size="sm">
-                <Button
-                  colorScheme={tipoCelulares === "nuevos" ? "blue" : "gray"}
-                  onClick={() => setTipoCelulares("nuevos")}
-                >
-                  Nuevos
-                </Button>
-                <Button
-                  colorScheme={tipoCelulares === "usados" ? "blue" : "gray"}
-                  onClick={() => setTipoCelulares("usados")}
-                >
-                  Usados
-                </Button>
-              </ButtonGroup>
-            </Flex>
-          </CardHeader>
-          <CardBody maxH="673px" overflowY="auto" overflowX="hidden">
-            <Table variant="simple" width="100%">
-              <Thead bg="gray.100">
+    maxH="500px"
+    bg="white"
+    boxShadow="lg"
+    borderRadius="md"
+    overflow="hidden"
+  >
+    <CardHeader>
+      <Flex justify="space-between" align="center">
+        <Text fontSize="20px" fontWeight="bold">
+          Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
+        </Text>
+        <ButtonGroup isAttached size="sm">
+          <Button
+            colorScheme={tipoCelulares === "nuevos" ? "blue" : "gray"}
+            onClick={() => setTipoCelulares("nuevos")}
+          >
+            Nuevos
+          </Button>
+          <Button
+            colorScheme={tipoCelulares === "usados" ? "blue" : "gray"}
+            onClick={() => setTipoCelulares("usados")}
+          >
+            Usados
+          </Button>
+        </ButtonGroup>
+      </Flex>
+    </CardHeader>
+    <CardBody maxH="673px" overflowY="auto" overflowX="hidden">
+      <Table variant="simple" width="100%">
+        <Thead bg="gray.100">
+          <Tr>
+
+            <Th textAlign={"center"}>Modelo</Th>
+            <Th textAlign={"center"}>Color</Th>
+            <Th textAlign={"center"}>Capacidad</Th>
+            <Th textAlign={"center"}>Stock</Th>
+            <Th textAlign={"center"}>Acciones</Th>
+
+
+          </Tr>
+        </Thead>
+        <Tbody>
+          {celulares.map((producto: any) => (
+            <Fragment key={producto.id}>
+              <Tr>
+                <Td textAlign={"center"} isTruncated>{obtenerNombreModelo(producto.modeloId)}</Td>
+                <Td p={1} textAlign={"center"}>{producto.color}</Td>
+                <Td p={1} textAlign={"center"}>{producto.capacidad}</Td>
+                <Td textAlign="center">
+                  <Flex justifyContent="center" alignItems="center" gap={2}>
+                    <IconButton
+                      icon={<MinusIcon />}
+                      aria-label="Disminuir stock"
+                      size="sm"
+                      onClick={() => actualizarStock(producto.id, producto.stock - 1)}
+                      isDisabled={producto.stock <= 0}
+                    />
+                    {producto.stock}
+                    <IconButton
+                      icon={<AddIcon />}
+                      aria-label="Aumentar stock"
+                      size="sm"
+                      onClick={() => actualizarStock(producto.id, producto.stock + 1)}
+                    />
+                  </Flex>
+                </Td>
+                <Td textAlign={"center"}>
+                  <Flex justifyContent={"center"} gap={2}>
+                    <Tooltip label={"Editar"}>
+                      <IconButton
+                        icon={<MdEdit />}
+                        aria-label="Editar"
+                        size="sm"
+                        color="blue.500"
+                        variant="ghost"
+                        onClick={() => handleEditarProducto(producto)}
+                      />
+                    </Tooltip>
+                    <Tooltip label={"Eliminar"}>
+                      <IconButton
+                        icon={<MdDelete />}
+                        onClick={() => {
+                          setSelectedProductId(producto.id);
+                          onOpen();
+                        }}
+                        aria-label="Eliminar"
+                        size="sm"
+                        color="red.500"
+                        variant="ghost"
+                      />
+                    </Tooltip>
+                    <Tooltip label={"Precios"}>
+                      <IconButton
+                        icon={
+                          filaExpandida === producto.id ? (
+                            <MdExpandLess />
+                          ) : (
+                            <MdExpandMore />
+                          )
+                        }
+                        aria-label="Expandir"
+                        size="sm"
+                        color="gray.600"
+                        variant="ghost"
+                        onClick={() => toggleExpandirFila(producto.id)}
+                      />
+                    </Tooltip>
+
+                  </Flex>
+                </Td>
+
+              </Tr>
+              {filaExpandida === producto.id && (
                 <Tr>
-
-                  <Th textAlign={"center"}>Modelo</Th>
-                  <Th textAlign={"center"}>Color</Th>
-                  <Th textAlign={"center"}>Capacidad</Th>
-                  <Th textAlign={"center"}>Stock</Th>
-                  <Th textAlign={"center"}>Acciones</Th>
-
-
+                  <Td colSpan={7} bg="gray.50">
+                    <Flex justify="space-around" py={2} flexWrap="wrap">
+                      <Text>
+                        <strong>Valor Neto:</strong> ${producto.valorNeto}
+                      </Text>
+                      <Text>
+                        <strong>Mayorista:</strong> ${producto.mayorista}
+                      </Text>
+                      <Text>
+                        <strong>Minorista:</strong> ${producto.minorista}
+                      </Text>
+                    </Flex>
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {celulares.map((producto: any) => (
-                  <Fragment key={producto.id}>
-                    <Tr>
-                      <Td textAlign={"center"} isTruncated>{obtenerNombreModelo(producto.modeloId)}</Td>
-                      <Td p={1} textAlign={"center"}>{producto.color}</Td>
-                      <Td p={1} textAlign={"center"}>{producto.capacidad}</Td>
-                      <Td textAlign="center">
-                        <Flex justifyContent="center" alignItems="center" gap={2}>
-                          <IconButton
-                            icon={<MinusIcon />}
-                            aria-label="Disminuir stock"
-                            size="sm"
-                            onClick={() => actualizarStock(producto.id, producto.stock - 1)}
-                            isDisabled={producto.stock <= 0}
-                          />
-                          {producto.stock}
-                          <IconButton
-                            icon={<AddIcon />}
-                            aria-label="Aumentar stock"
-                            size="sm"
-                            onClick={() => actualizarStock(producto.id, producto.stock + 1)}
-                          />
-                        </Flex>
-                      </Td>
-                      <Td textAlign={"center"}>
-                        <Flex justifyContent={"center"} gap={2}>
-                          <Tooltip label={"Editar"}>
-                            <IconButton
-                              icon={<MdEdit />}
-                              aria-label="Editar"
-                              size="sm"
-                              color="blue.500"
-                              variant="ghost"
-                              onClick={() => handleEditarProducto(producto)}
-                            />
-                          </Tooltip>
-                          <Tooltip label={"Eliminar"}>
-                            <IconButton
-                              icon={<MdDelete />}
-                              onClick={() => {
-                                setSelectedProductId(producto.id);
-                                onOpen();
-                              }}
-                              aria-label="Eliminar"
-                              size="sm"
-                              color="red.500"
-                              variant="ghost"
-                            />
-                          </Tooltip>
-                          <Tooltip label={"Precios"}>
-                            <IconButton
-                              icon={
-                                filaExpandida === producto.id ? (
-                                  <MdExpandLess />
-                                ) : (
-                                  <MdExpandMore />
-                                )
-                              }
-                              aria-label="Expandir"
-                              size="sm"
-                              color="gray.600"
-                              variant="ghost"
-                              onClick={() => toggleExpandirFila(producto.id)}
-                            />
-                          </Tooltip>
+              )}
+            </Fragment>
+          ))}
+        </Tbody>
+      </Table>
+    </CardBody>
+  </Card>
 
-                        </Flex>
-                      </Td>
+  ) : (
+        <>
+      {celulares.map((producto) => (
+        <CelularCardMobile
+          key={producto.id}
+          producto={{
+            ...producto,
+            modelo: obtenerNombreModelo(producto.modeloId),
+          }}
+          onEditar={() => handleEditarProducto(producto)}
+          onEliminar={() => {
+            setSelectedProductId(producto.id);
+            onOpen();
+          }}
+          onExpandir={() => toggleExpandirFila(producto.id)}
+          expandido={filaExpandida === producto.id}
+        />
+      ))}
+    </>
+  )}
 
-                    </Tr>
-                    {filaExpandida === producto.id && (
-                      <Tr>
-                        <Td colSpan={7} bg="gray.50">
-                          <Flex justify="space-around" py={2} flexWrap="wrap">
-                            <Text>
-                              <strong>Valor Neto:</strong> ${producto.valorNeto}
-                            </Text>
-                            <Text>
-                              <strong>Mayorista:</strong> ${producto.mayorista}
-                            </Text>
-                            <Text>
-                              <strong>Minorista:</strong> ${producto.minorista}
-                            </Text>
-                          </Flex>
-                        </Td>
-                      </Tr>
-                    )}
-                  </Fragment>
-                ))}
-              </Tbody>
-            </Table>
-          </CardBody>
-        </Card>
+
+
+       
 
         {/* Card de Accesorios */}
         <Card
@@ -383,3 +412,67 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
 }
 
 export default Productos;
+
+
+
+export const CelularCardMobile = ({ producto, onEditar, onEliminar, onExpandir, expandido }) => {
+  return (
+    <Box
+      p={4}
+      mb={4}
+      borderRadius="md"
+      boxShadow="md"
+      bg="white"
+      borderLeft="5px solid #F6AD55" // color naranja tipo tag
+    >
+      <Flex direction="column" gap={1}>
+        <Text><strong>Modelo:</strong> {producto.modelo}</Text>
+        <Text><strong>Color:</strong> {producto.color}</Text>
+        <Text><strong>Capacidad:</strong> {producto.capacidad}</Text>
+        <Text><strong>Stock:</strong> {producto.stock}</Text>
+      </Flex>
+
+      <Flex justify="flex-end" mt={3} gap={2}>
+        <Tooltip label="Editar">
+          <IconButton
+            icon={<MdEdit />}
+            aria-label="Editar"
+            size="sm"
+            color="blue.500"
+            variant="ghost"
+            onClick={onEditar}
+          />
+        </Tooltip>
+        <Tooltip label="Eliminar">
+          <IconButton
+            icon={<MdDelete />}
+            aria-label="Eliminar"
+            size="sm"
+            color="red.500"
+            variant="ghost"
+            onClick={onEliminar}
+          />
+        </Tooltip>
+        <Tooltip label="Precios">
+          <IconButton
+            icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
+            aria-label="Expandir"
+            size="sm"
+            color="gray.600"
+            variant="ghost"
+            onClick={onExpandir}
+          />
+        </Tooltip>
+      </Flex>
+
+      {expandido && (
+        <Box mt={2} bg="gray.50" p={2} borderRadius="md">
+          <Text><strong>Valor Neto:</strong> ${producto.valorNeto}</Text>
+          <Text><strong>Mayorista:</strong> ${producto.mayorista}</Text>
+          <Text><strong>Minorista:</strong> ${producto.minorista}</Text>
+        </Box>
+      )}
+    </Box>
+  );
+};
+
