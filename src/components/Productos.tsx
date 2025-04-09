@@ -16,13 +16,6 @@ import {
   IconButton,
   ButtonGroup,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -32,6 +25,8 @@ import EditProduct from "./EditProduct";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { updateStockProducto } from "../supabase/productos.service";
 import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
+import { CardMobileCelular } from "./CardMobileCelular";
+import { CardMobileAccesorio } from "./CardMobileAccesorio";
 
 function Productos({ productos, categorias, modelos, onDelete, fetchProductos, fetchModelos }: any) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
@@ -41,7 +36,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({ base: true, md: false }, { fallback: false });
 
   const celulares = productos.filter((producto: any) =>
     tipoCelulares === "nuevos"
@@ -81,11 +76,19 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
   }
 
   return (
-    <Box p={5} bg={"gray.100"} >
-      <Flex mb={5}>
-        <Button colorScheme="green" onClick={() => setIsModalOpen(true)}>
-          Agregar Producto
-        </Button>
+    <Box p={{ base: 1 , md: 5}} bg={"gray.100"} >
+      <Flex  mb={5}>
+      <Button 
+     w={{base: "100%", md:"190px"}}
+      p={2}
+  colorScheme="green" 
+  size={{ base: "sm", md: "md" }}
+  leftIcon={<AddIcon />}
+  onClick={() => setIsModalOpen(true)}
+>
+  <Box>Agregar Producto</Box>
+</Button>
+
       </Flex>
       <Flex
         gap={6}
@@ -94,16 +97,13 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         flexDirection={{ base: "column", md: "column", lg: "column", xl: "row" }}
       >
         {/* Card de Celulares */}
-       
   {!isMobile ? (
     <Card
     w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
-
-    maxH="500px"
     bg="white"
     boxShadow="lg"
     borderRadius="md"
-    overflow="hidden"
+
   >
     <CardHeader>
       <Flex justify="space-between" align="center">
@@ -126,7 +126,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         </ButtonGroup>
       </Flex>
     </CardHeader>
-    <CardBody maxH="673px" overflowY="auto" overflowX="hidden">
+    <CardBody overflowX="hidden">
       <Table variant="simple" width="100%">
         <Thead bg="gray.100">
           <Tr>
@@ -234,11 +234,29 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
       </Table>
     </CardBody>
   </Card>
-
   ) : (
-        <>
-      {celulares.map((producto) => (
-        <CelularCardMobile
+        <Box w={"100%"}>
+      <Flex justify="space-between" align="center" mb={3}>
+        <Text fontSize="20px" fontWeight="bold">
+          Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
+        </Text>
+        <ButtonGroup isAttached size="sm">
+          <Button
+            colorScheme={tipoCelulares === "nuevos" ? "blue" : "gray"}
+            onClick={() => setTipoCelulares("nuevos")}
+          >
+            Nuevos
+          </Button>
+          <Button
+            colorScheme={tipoCelulares === "usados" ? "blue" : "gray"}
+            onClick={() => setTipoCelulares("usados")}
+          >
+            Usados
+          </Button>
+        </ButtonGroup>
+      </Flex>
+      {celulares.map((producto : any) => (
+        <CardMobileCelular
           key={producto.id}
           producto={{
             ...producto,
@@ -251,17 +269,15 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           }}
           onExpandir={() => toggleExpandirFila(producto.id)}
           expandido={filaExpandida === producto.id}
+          actualizarStock={actualizarStock}
         />
       ))}
-    </>
+    </Box>
   )}
 
-
-
-       
-
         {/* Card de Accesorios */}
-        <Card
+        {!isMobile ? (
+<Card
           w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
           maxH="500px"
           bg="white"
@@ -376,6 +392,28 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
             </Table>
           </CardBody>
         </Card>
+        ): (
+          <Box w={"100%"} >
+              <Text fontSize="20px" fontWeight="bold" mb={3}>
+              Accesorios
+            </Text>
+          {accesoriosFiltrados.map((accesorio : any) => (
+            <CardMobileAccesorio
+              key={accesorio.id}
+              accesorio={accesorio}
+              onEditar={() => handleEditarProducto(accesorio)}
+              onEliminar={() => {
+                setSelectedProductId(accesorio.id);
+                onOpen();
+              }}
+              onExpandir={() => toggleExpandirFila(accesorio.id)}
+              expandido={filaExpandida === accesorio.id}
+              actualizarStock={actualizarStock}
+            />
+          ))}
+         </Box>
+        )}
+        
       </Flex>
 
       {isModalUpdateOpen && (
@@ -415,64 +453,4 @@ export default Productos;
 
 
 
-export const CelularCardMobile = ({ producto, onEditar, onEliminar, onExpandir, expandido }) => {
-  return (
-    <Box
-      p={4}
-      mb={4}
-      borderRadius="md"
-      boxShadow="md"
-      bg="white"
-      borderLeft="5px solid #F6AD55" // color naranja tipo tag
-    >
-      <Flex direction="column" gap={1}>
-        <Text><strong>Modelo:</strong> {producto.modelo}</Text>
-        <Text><strong>Color:</strong> {producto.color}</Text>
-        <Text><strong>Capacidad:</strong> {producto.capacidad}</Text>
-        <Text><strong>Stock:</strong> {producto.stock}</Text>
-      </Flex>
-
-      <Flex justify="flex-end" mt={3} gap={2}>
-        <Tooltip label="Editar">
-          <IconButton
-            icon={<MdEdit />}
-            aria-label="Editar"
-            size="sm"
-            color="blue.500"
-            variant="ghost"
-            onClick={onEditar}
-          />
-        </Tooltip>
-        <Tooltip label="Eliminar">
-          <IconButton
-            icon={<MdDelete />}
-            aria-label="Eliminar"
-            size="sm"
-            color="red.500"
-            variant="ghost"
-            onClick={onEliminar}
-          />
-        </Tooltip>
-        <Tooltip label="Precios">
-          <IconButton
-            icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
-            aria-label="Expandir"
-            size="sm"
-            color="gray.600"
-            variant="ghost"
-            onClick={onExpandir}
-          />
-        </Tooltip>
-      </Flex>
-
-      {expandido && (
-        <Box mt={2} bg="gray.50" p={2} borderRadius="md">
-          <Text><strong>Valor Neto:</strong> ${producto.valorNeto}</Text>
-          <Text><strong>Mayorista:</strong> ${producto.mayorista}</Text>
-          <Text><strong>Minorista:</strong> ${producto.minorista}</Text>
-        </Box>
-      )}
-    </Box>
-  );
-};
 

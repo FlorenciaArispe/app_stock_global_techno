@@ -168,9 +168,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
     }
   };
   
-
 const onDelete = async () => {
-
   try {
     console.log(selectedVentaId)
     await deleteVenta(selectedVentaId);
@@ -196,11 +194,10 @@ const handleDeleteConfirm = () => {
   onDelete()
 }
 
-  
   return (
     <Box p={5}>
       <Box bg="white" p={5} borderRadius="md" boxShadow="md" mb={5}>
-        <Flex flexDirection={"row"} gap={6}>
+        <Flex flexDirection={"row"} gap={{base: 2, md:6}}>
         <FormControl mb={4}>
           <FormLabel>Fecha de Venta</FormLabel>
           <Input type="date" value={fecha_venta} onChange={(e) => setFecha(e.target.value)} />
@@ -211,11 +208,32 @@ const handleDeleteConfirm = () => {
         </FormControl>
         </Flex>
 
-        <Box maxHeight="250px" overflowY="auto" p={2} borderWidth={productosSeleccionados.length > 0 ? "1px" : "0"} borderColor="gray.200" borderRadius="md" mb={3}>
+        <Box p={2} borderWidth={productosSeleccionados.length > 0 ? "1px" : "0"} borderColor="gray.200" borderRadius="md" mb={3}>
           {productosSeleccionados.map((prod, index) => (
-            <HStack key={index} spacing={4} align="start" p={3} borderBottom="1px solid #ddd">
-              <FormControl>
-                <FormLabel>Producto</FormLabel>
+            <HStack
+  key={index}
+  flexDirection={{ base: "column", md: "row" }}
+  spacing={2}
+  align="start"
+  p={3}
+  borderBottom="1px solid #ddd"
+  position="relative" // 💥 Esto es clave
+>
+  <Button
+    size="xs"
+    colorScheme="red"
+    onClick={() => eliminarProducto(index)}
+    position="absolute"
+    top="2"
+    right="2"
+    zIndex="1"
+
+  >
+    <MdClose />
+  </Button>
+
+  <FormControl>
+                <FormLabel fontWeight={700}>PRODUCTO</FormLabel>
                 <Select
                   placeholder="Seleccionar producto"
                   value={prod.id}
@@ -245,7 +263,7 @@ const handleDeleteConfirm = () => {
     value={prod.tipoVenta}
     onChange={(value) => actualizarProducto(index, "tipoVenta", value)}
   >
-    <VStack align="start" spacing={1}>
+    <VStack flexDirection={{base: "row", md:"column"}} align="start" spacing={1}>
       <Radio value="minorista">Minorista</Radio>
       <Radio value="mayorista">Mayorista</Radio>
     </VStack>
@@ -265,11 +283,10 @@ const handleDeleteConfirm = () => {
     })()}
   />
 </FormControl>
+</HStack>
 
-              <Button size="sm" colorScheme="red" onClick={() => eliminarProducto(index)}>
-                <MdClose />
-              </Button>
-            </HStack>
+            
+           
           ))}
         </Box>
 
@@ -301,7 +318,7 @@ const handleDeleteConfirm = () => {
     Ventas Registradas
   </Text>
 
-  <Box maxH="450px" overflowY="auto">
+  <Box overflowY="auto">
     <Table size="sm">
       <Thead position="sticky" top={0} bg="white" zIndex={1}>
         <Tr >

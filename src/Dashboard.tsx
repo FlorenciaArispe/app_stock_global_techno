@@ -89,7 +89,7 @@ function Dashboard(onLogout: any) {
   return (
     <Box bg="gray.100" h={"100vh"}>
       <Flex bg="gray.800" p={4} align="center" justify="space-between" w={"100%"}>
-        <Text ml={10} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
+        <Text ml={{base:1, md:4}} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
           Stock Global Technology
         </Text>
         <Flex display={{ base: "none", md: "flex" }} gap={1} >
