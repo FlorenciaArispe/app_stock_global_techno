@@ -30,6 +30,7 @@ import NewProduct from "./NewProduct";
 import EditProduct from "./EditProduct";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { updateStockProducto } from "../supabase/productos.service";
+import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
 
 function Productos({ productos, categorias, modelos, onDelete, fetchProductos, fetchModelos }: any) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
@@ -75,27 +76,24 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     const res = await updateStockProducto(id, stockNuevo)
     console.log(res)
     fetchProductos()
-
   }
 
   return (
-    <Box bg={"gray.100"} >
+    <Box p={5} bg={"gray.100"} >
       <Flex mb={5}>
         <Button colorScheme="green" onClick={() => setIsModalOpen(true)}>
           Agregar Producto
         </Button>
       </Flex>
-
       <Flex
         gap={6}
         justify="center"
         align="start"
         flexDirection={{ base: "column", md: "column", lg: "column", xl: "row" }}
       >
-
         {/* Card de Celulares */}
         <Card
-          w={{ base: "100%", md: "100%", lg: "100%" , xl: "row"}}
+          w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
 
           maxH="500px"
           bg="white"
@@ -124,7 +122,6 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
               </ButtonGroup>
             </Flex>
           </CardHeader>
-
           <CardBody maxH="673px" overflowY="auto" overflowX="hidden">
             <Table variant="simple" width="100%">
               <Thead bg="gray.100">
@@ -234,10 +231,9 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           </CardBody>
         </Card>
 
-
         {/* Card de Accesorios */}
         <Card
-          w={{ base: "100%", md: "100%", lg: "100%" , xl: "row"}}
+          w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
           maxH="500px"
           bg="white"
           boxShadow="lg"
@@ -265,7 +261,24 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                     <Tr key={accesorio.id}>
                       <Td textAlign={"center"}>{accesorio.id}</Td>
                       <Td textAlign={"center"}>{accesorio.nombre}</Td>
-                      <Td textAlign={"center"}>{accesorio.stock}</Td>
+                      <Td textAlign="center">
+                        <Flex justifyContent="center" alignItems="center" gap={2}>
+                          <IconButton
+                            icon={<MinusIcon />}
+                            aria-label="Disminuir stock"
+                            size="sm"
+                            onClick={() => actualizarStock(accesorio.id, accesorio.stock - 1)}
+                            isDisabled={accesorio.stock <= 0}
+                          />
+                          {accesorio.stock}
+                          <IconButton
+                            icon={<AddIcon />}
+                            aria-label="Aumentar stock"
+                            size="sm"
+                            onClick={() => actualizarStock(accesorio.id, accesorio.stock + 1)}
+                          />
+                        </Flex>
+                      </Td>
                       <Td textAlign={"center"}>
                         <Flex justifyContent={"center"} gap={2}>
                           <Tooltip label={"Editar"}>
@@ -346,6 +359,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           producto={productoSeleccionado}
           categorias={categorias}
           modelos={modelos}
+          productos={productos}
           fetchProductos={fetchProductos}
           fetchModelos={fetchModelos}
         />
@@ -360,37 +374,10 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           modelos={modelos}
           fetchProductos={fetchProductos}
           fetchModelos={fetchModelos}
-
         />
       )}
 
-
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Confirmar eliminación</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            ¿Estás seguro que querés eliminar este producto?
-          </ModalBody>
-
-          <ModalFooter>
-            <Button onClick={onClose} mr={3}>
-              Cancelar
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                handleDeleteConfirm();
-                onClose();
-              }}
-            >
-              Eliminar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
+      <ModalConfirmacionDelete isOpen ={isOpen} onClose={onClose} handleDeleteConfirm={handleDeleteConfirm} />
     </Box>
   );
 }

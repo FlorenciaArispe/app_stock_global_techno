@@ -4,7 +4,6 @@ async function getProductos() {
   const { data, error } = await supabase
     .from("productos")
     .select()
-    .order('id', { ascending: true });
   if (error) {
     if (error.message === "JWT expired") {
       await supabase.auth.signOut();
@@ -60,8 +59,9 @@ async function createProducto(
 }
 
 async function updateProducto(id: number, data: any) {
+  console.log("aca data",data)
   const { error } = await supabase
-    .from("productos") // ojo que acá corregí a "productos" en minúscula
+    .from("productos")
     .update(data)
     .eq("id", id);
 
