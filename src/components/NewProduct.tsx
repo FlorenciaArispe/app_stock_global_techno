@@ -20,7 +20,7 @@ import {
 import { createProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
 
-function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchProductos , fetchModelos }: any) {
+function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProductos, fetchModelos }: any) {
   const [step, setStep] = useState(1);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modelo, setModelo] = useState();
@@ -40,16 +40,16 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal;
 
-    if(modelo==="Otro"){
-     const res= await createModelo(modeloOtro)
-       modeloFinal=res;
+    if (modelo === "Otro") {
+      const res = await createModelo(modeloOtro)
+      modeloFinal = res;
     }
-    else{
-      const modeloObj= modelos.find((mod) => mod.nombre === modelo)
-      modeloFinal=modeloObj?.id
+    else {
+      const modeloObj = modelos.find((mod : any) => mod.nombre === modelo)
+      modeloFinal = modeloObj?.id
     }
 
-    const categoriaObj = categorias.find((cat) => cat.nombre === categoriaSeleccionada);
+    const categoriaObj = categorias.find((cat : any) => cat.nombre === categoriaSeleccionada);
     const categoriaId = categoriaObj?.id;
 
     if (!categoriaSeleccionada) validationErrors.categoria = "La categoría es obligatoria.";
@@ -57,15 +57,15 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
       if (!modeloFinal) {
         validationErrors.modelo = "El modelo es obligatorio.";
       }
-    
+
       if (modelo === "Otro" && modeloError) {
         validationErrors.modeloOtro = modeloError;
       }
-    
+
       if (!color) {
         validationErrors.color = "El color es obligatorio.";
       }
-    
+
       if (!capacidad) {
         validationErrors.capacidad = "La capacidad es obligatoria.";
       }
@@ -99,7 +99,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
         return;
       }
     }
-     else {
+    else {
       const productoDuplicado = productos.find((p: any) => {
         return (
           p.modeloId === modeloFinal &&
@@ -108,7 +108,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
           p.capacidad.toLowerCase() === capacidad.toLowerCase()
         );
       });
-
       if (productoDuplicado) {
         setErrors({
           ...validationErrors,
@@ -120,48 +119,41 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos , fetchPro
       }
     }
 
-    try{    
-  
-   await createProducto(stock, categoriaId, valorNeto , mayorista, minorista, capacidad,color, modeloFinal, nombreAccesorio )
-   await fetchProductos()
-   
-   onClose();
-   await fetchModelos()
-     setErrors({});
-     setStep(1);
-     setModeloOtro("");
-     setModeloError("");
-    
-     toast({
-      title: "Producto agregado",
-      description: "El producto se ha creado correctamente.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    })
+    try {
+      await createProducto(stock, categoriaId, valorNeto, mayorista, minorista, capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+      await fetchProductos()
+      onClose();
+      await fetchModelos()
+      setErrors({});
+      setStep(1);
+      setModeloOtro("");
+      setModeloError("");
+
+      toast({
+        title: "Producto agregado",
+        description: "El producto se ha creado correctamente.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
     }
-    
-catch (error) {
-
-
-    // Mostrar notificación de error
-    toast({
-      title: "Error",
-      description: "Hubo un problema al crear el producto. Inténtelo nuevamente.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    } 
-    )}
+    catch (error) {
+      toast({
+        title: "Error",
+        description: "Hubo un problema al crear el producto. Inténtelo nuevamente.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      }
+      )
+    }
   }
-
-  
 
   const tituloModal = categoriaSeleccionada ? `Agregar ${categoriaSeleccionada}` : "Agregar Nuevo Producto";
 
   const handleModeloOtroChange = (value: string) => {
     setModeloOtro(value);
-    const existe = modelos.some((m) => m.nombre.toLowerCase() === value.toLowerCase());
+    const existe = modelos.some((m : any) => m.nombre.toLowerCase() === value.toLowerCase());
     if (existe) {
       setModeloError("Este modelo ya existe. Buscalo en la lista de arriba.");
     } else {
@@ -169,17 +161,21 @@ catch (error) {
     }
   };
 
+  const capitalizarPrimeraLetra = (texto: string) => {
+    if (!texto) return "";
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
       <ModalOverlay />
       <ModalContent
-      mt={{ base: '0', md:'2', lg: '20' }}
+        mt={{ base: '0', md: '2', lg: '20' }}
       >
         <ModalHeader>{tituloModal}</ModalHeader>
         <ModalCloseButton />
-
         <ModalBody>
-        {errors.general && (
+          {errors.general && (
             <Box bg="red.100" p={3} mb={4} borderRadius="md">
               <Text color="red.600" fontSize="sm" fontWeight="bold">
                 {errors.general}
@@ -195,7 +191,7 @@ catch (error) {
                 value={categoriaSeleccionada}
                 onChange={(e) => setCategoriaSeleccionada(e.target.value)}
               >
-                {categorias.map((cat) => (
+                {categorias.map((cat : any) => (
                   <option key={cat.id} value={cat.nombre}>
                     {cat.nombre}
                   </option>
@@ -206,197 +202,186 @@ catch (error) {
 
           {step === 2 && categoriaSeleccionada !== "Accesorio" && (
             <>
-            <Flex flexDirection={"row"}  gap={6} mb={4}>
-              <FormControl>
-                <FormLabel>Modelo</FormLabel>
-                <Select
-                  placeholder="Selecciona un modelo"
-                  value={modelo}
-                  onChange={(e) => {
-                    setModelo(e.target.value);
-                    setModeloOtro("");
-                    setModeloError("");
-                    if (errors.general) {
-                        console.log("entre")
-                        setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-                      }
-                  }}
-                >
-                  {modelos.map((m) => (
-                    <option key={m.id} value={m.nombre}>
-                      {m.nombre}
-                    </option>
-                  ))}
-                  <option value="Otro">Otro</option>
-                </Select>
-              </FormControl>
-
-              {modelo === "Otro" && (
-                <FormControl mt={2} isInvalid={!!modeloError}>
-                  <FormLabel>Nuevo modelo</FormLabel>
-                  <Input
-                    placeholder="Escribe el modelo"
-                    value={modeloOtro}
+              <Flex flexDirection={"row"} gap={6} mb={4}>
+                <FormControl>
+                  <FormLabel>Modelo</FormLabel>
+                  <Select
+                    placeholder="Selecciona un modelo"
+                    value={modelo}
                     onChange={(e) => {
+                      setModelo(e.target.value);
+                      setModeloOtro("");
+                      setModeloError("");
                       if (errors.general) {
                         console.log("entre")
                         setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                       }
-                      handleModeloOtroChange(e.target.value)
-                      
-                    }
-                    }
+                    }}
+                  >
+                    {modelos.map((m) => (
+                      <option key={m.id} value={m.nombre}>
+                        {m.nombre}
+                      </option>
+                    ))}
+                    <option value="Otro">Otro</option>
+                  </Select>
+                </FormControl>
+                {modelo === "Otro" && (
+                  <FormControl mt={2} isInvalid={!!modeloError}>
+                    <FormLabel>Nuevo modelo</FormLabel>
+                    <Input
+                      placeholder="Escribe el modelo"
+                      value={modeloOtro}
+                      onChange={(e) => {
+                        if (errors.general) {
+                          console.log("entre")
+                          setErrors(prevErrors => ({ ...prevErrors, general: '' }));
+                        }
+                        handleModeloOtroChange(e.target.value)
+
+                      }
+                      }
+                    />
+                    {modeloError && (
+                      <Text color="red.500" fontSize="sm">
+                        {modeloError}
+                      </Text>
+                    )}
+                  </FormControl>
+                )}
+              </Flex>
+              <Flex flexDirection={"row"} gap={6} mb={4}>
+                <FormControl isInvalid={!!errors.color}>
+                  <FormLabel>Color</FormLabel>
+                  <Input
+                    value={color}
+                    onChange={(e) => {
+                      setColor(e.target.value);
+                      setErrors((prev) => ({ ...prev, color: "" }));
+                      if (errors.general) {
+                        console.log("entre")
+                        setErrors(prevErrors => ({ ...prevErrors, general: '' }));
+                      }
+                    }}
                   />
-                  {modeloError && (
-                    <Text color="red.500" fontSize="sm">
-                      {modeloError}
-                    </Text>
+                  {errors.color && (
+                    <Text color="red.500" fontSize="sm">{errors.color}</Text>
                   )}
                 </FormControl>
-              )}
+
+                <FormControl isInvalid={!!errors.capacidad}>
+                  <FormLabel>Capacidad</FormLabel>
+                  <Select
+                    placeholder="Selecciona "
+                    value={capacidad}
+                    onChange={(e) => {
+                      setCapacidad(e.target.value);
+                      setErrors((prev) => ({ ...prev, capacidad: "" }));
+                      if (errors.general) {
+                        console.log("entre");
+                        setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
+                      }
+                    }}
+                  >
+                    <option value="128GB">128GB</option>
+                    <option value="256GB">256GB</option>
+                  </Select>
+                </FormControl>
+
               </Flex>
-
-<Flex flexDirection={"row"}  gap={6}  mb={4}>
-<FormControl isInvalid={!!errors.color}>
-  <FormLabel>Color</FormLabel>
-  <Input
-    value={color}
-    onChange={(e) => {
-      setColor(e.target.value);
-      setErrors((prev) => ({ ...prev, color: "" }));
-      if (errors.general) {
-        console.log("entre")
-        setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-      }
-    }}
-  />
-  {errors.color && (
-    <Text color="red.500" fontSize="sm">{errors.color}</Text>
-  )}
-</FormControl>
-
-<FormControl isInvalid={!!errors.capacidad}>
-  <FormLabel>Capacidad</FormLabel>
-  <Select
-    placeholder="Selecciona "
-    value={capacidad}
-    onChange={(e) => {
-      setCapacidad(e.target.value);
-      setErrors((prev) => ({ ...prev, capacidad: "" }));
-      if (errors.general) {
-        console.log("entre");
-        setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
-      }
-    }}
-  >
-    <option value="128GB">128GB</option>
-    <option value="256GB">256GB</option>
-  </Select>
-</FormControl>
-
-</Flex>
             </>
           )}
 
           {step === 2 && (
             <>
               {categoriaSeleccionada === "Accesorio" && (
-               <FormControl isInvalid={!!errors.nombreAccesorio}  mb={4}>
-               <FormLabel>Nombre del Accesorio</FormLabel>
-               <Input value={nombreAccesorio} onChange={(e) => {
-                setNombreAccesorio(e.target.value)
-                setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
-                if (errors.general) {
-                  console.log("entre")
-                  setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-                }
-              }} />
-               {errors.nombreAccesorio && (
-                 <Text color="red.500" fontSize="sm">
-                   {errors.nombreAccesorio}
-                 </Text>
-               )}
-             </FormControl>
-             
+                <FormControl isInvalid={!!errors.nombreAccesorio} mb={4}>
+                  <FormLabel>Nombre del Accesorio</FormLabel>
+                  <Input value={nombreAccesorio} onChange={(e) => {
+                    setNombreAccesorio(e.target.value)
+                    setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
+                    if (errors.general) {
+                      console.log("entre")
+                      setErrors(prevErrors => ({ ...prevErrors, general: '' }));
+                    }
+                  }} />
+                  {errors.nombreAccesorio && (
+                    <Text color="red.500" fontSize="sm">
+                      {errors.nombreAccesorio}
+                    </Text>
+                  )}
+                </FormControl>
+
               )}
+              <Flex flexDirection={"row"} gap={6} mb={4}>
+                <FormControl isInvalid={!!errors.stock}>
+                  <FormLabel>Stock</FormLabel>
+                  <Input type="number" value={stock} onChange={(e) => {
+                    setStock(e.target.value)
+                    setErrors((prev) => ({ ...prev, stock: "" }));
+                  }} />
+                  {errors.stock && (
+                    <Text color="red.500" fontSize="sm">
+                      {errors.stock}
+                    </Text>
+                  )}
+                </FormControl>
+                <FormControl isInvalid={!!errors.valorNeto}>
+                  <FormLabel>Valor Neto</FormLabel>
+                  <Input type="number" value={valorNeto} onChange={(e) => {
+                    setValorNeto(e.target.value)
+                    setErrors((prev) => ({ ...prev, valorNeto: "" }));
+                  }} />
+                  {errors.valorNeto && (
+                    <Text color="red.500" fontSize="sm">
+                      {errors.valorNeto}
+                    </Text>
+                  )}
+                </FormControl>
+              </Flex>
+              <Flex flexDirection={"row"} gap={6} mb={4}>
+                <FormControl isInvalid={!!errors.minorista}>
+                  <FormLabel>Precio Minorista</FormLabel>
+                  <Input type="number" value={minorista} onChange={(e) => {
+                    setMinorista(e.target.value)
+                    setErrors((prev) => ({ ...prev, minorista: "" }));
+                  }} />
+                  {errors.minorista && (
+                    <Text color="red.500" fontSize="sm">
+                      {errors.minorista}
+                    </Text>
+                  )}
+                </FormControl>
 
-<Flex flexDirection={"row"}  gap={6}  mb={4}> 
-
-<FormControl isInvalid={!!errors.stock}>
-  <FormLabel>Stock</FormLabel>
-  <Input type="number" value={stock} onChange={(e) => {
-    setStock(e.target.value)
-    setErrors((prev) => ({ ...prev, stock: "" }));
-
-    }} />
-  {errors.stock && (
-    <Text color="red.500" fontSize="sm">
-      {errors.stock}
-    </Text>
-  )}
-</FormControl>
-
-<FormControl isInvalid={!!errors.valorNeto}>
-  <FormLabel>Valor Neto</FormLabel>
-  <Input type="number" value={valorNeto} onChange={(e) => {
-    setValorNeto(e.target.value)
-    setErrors((prev) => ({ ...prev, valorNeto: "" }));
-    }} />
-  {errors.valorNeto && (
-    <Text color="red.500" fontSize="sm">
-      {errors.valorNeto}
-    </Text>
-  )}
-</FormControl>
-</Flex>
-<Flex flexDirection={"row"}  gap={6}  mb={4}>
-<FormControl isInvalid={!!errors.minorista}>
-  <FormLabel>Precio Minorista</FormLabel>
-  <Input type="number" value={minorista} onChange={(e) => {
-    setMinorista(e.target.value)
-    setErrors((prev) => ({ ...prev, minorista: "" }));
-    }} />
-  {errors.minorista && (
-    <Text color="red.500" fontSize="sm">
-      {errors.minorista}
-    </Text>
-  )}
-</FormControl>
-
-<FormControl isInvalid={!!errors.mayorista}>
-  <FormLabel>Precio Mayorista</FormLabel>
-  <Input type="number" value={mayorista} onChange={(e) => {
-    setMayorista(e.target.value)
-    setErrors((prev) => ({ ...prev, mayorista: "" }));
-    }} />
-  {errors.mayorista && (
-    <Text color="red.500" fontSize="sm">
-      {errors.mayorista}
-    </Text>
-  )}
-</FormControl>
-</Flex>
-
-
+                <FormControl isInvalid={!!errors.mayorista}>
+                  <FormLabel>Precio Mayorista</FormLabel>
+                  <Input type="number" value={mayorista} onChange={(e) => {
+                    setMayorista(e.target.value)
+                    setErrors((prev) => ({ ...prev, mayorista: "" }));
+                  }} />
+                  {errors.mayorista && (
+                    <Text color="red.500" fontSize="sm">
+                      {errors.mayorista}
+                    </Text>
+                  )}
+                </FormControl>
+              </Flex>
             </>
           )}
         </ModalBody>
-        
-
         <ModalFooter>
-       
-        {step > 1 && (
-    <Button
-      onClick={() => {
-        setStep(step - 1);
-        setErrors((prev) => ({ ...prev, general: '' })); // ✅ limpia el error
-      }}
-      variant="outline"
-      mr={3}
-    >
-      Atrás
-    </Button>
-  )}
+          {step > 1 && (
+            <Button
+              onClick={() => {
+                setStep(step - 1);
+                setErrors((prev) => ({ ...prev, general: '' }));
+              }}
+              variant="outline"
+              mr={3}
+            >
+              Atrás
+            </Button>
+          )}
 
           {step === 1 && (
             <Button colorScheme="blue" onClick={() => setStep(2)} isDisabled={!categoriaSeleccionada}>

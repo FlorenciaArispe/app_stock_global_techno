@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Dashboard from './Dashboard';
 import supabase from './supabase/supabase.service';
 import Login from './components/Login';
-import { Box, ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 
 function App() {
   const [session, setSession] = useState(null);
