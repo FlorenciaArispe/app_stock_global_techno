@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth event:', event);
+      console.log('SESION:', session);
       setSession(session);
     });
   
