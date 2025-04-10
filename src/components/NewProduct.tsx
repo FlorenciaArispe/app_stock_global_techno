@@ -167,7 +167,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
+    <Modal  isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
       <ModalOverlay />
       <ModalContent
         mt={{ base: '0', md: '2', lg: '20' }}
@@ -184,20 +184,20 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
           )}
 
           {step === 1 && (
-            <FormControl>
-              <FormLabel>Selecciona la categoría</FormLabel>
-              <Select
-                placeholder="Seleccione una categoría"
-                value={categoriaSeleccionada}
-                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-              >
-                {categorias.map((cat : any) => (
-                  <option key={cat.id} value={cat.nombre}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+     <FormControl>
+     <FormLabel>Selecciona la categoría</FormLabel>
+     <Select
+       placeholder="Seleccione una categoría"
+       value={categoriaSeleccionada}
+       onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+     >
+       {categorias.map((cat: any) => (
+         <option key={cat.id} value={cat.nombre}>
+           {cat.nombre}
+         </option>
+       ))}
+     </Select>
+   </FormControl>
           )}
 
           {step === 2 && categoriaSeleccionada !== "Accesorio" && (
@@ -212,6 +212,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       setModelo(e.target.value);
                       setModeloOtro("");
                       setModeloError("");
+                      setErrors((prev) => ({ ...prev, modelo: "" }));
                       if (errors.general) {
                         console.log("entre")
                         setErrors(prevErrors => ({ ...prevErrors, general: '' }));
@@ -225,6 +226,9 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     ))}
                     <option value="Otro">Otro</option>
                   </Select>
+                  {errors.modelo && (
+                    <Text color="red.500" fontSize="sm">{errors.modelo}</Text>
+                  )}
                 </FormControl>
                 {modelo === "Otro" && (
                   <FormControl mt={2} isInvalid={!!modeloError}>
@@ -286,6 +290,9 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     <option value="128GB">128GB</option>
                     <option value="256GB">256GB</option>
                   </Select>
+                  {errors.capacidad && (
+                    <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
+                  )}
                 </FormControl>
 
               </Flex>
