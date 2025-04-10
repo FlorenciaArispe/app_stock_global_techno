@@ -8,10 +8,12 @@ import {
   Flex,
   Tooltip,
   IconButton,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { MdClose, MdDelete, MdEdit } from "react-icons/md";
 import { createVenta, deleteVenta, updateVenta } from "../supabase/ventas.service";
 import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
+import { CardMobileVentas } from "./CardMobileVentas";
 
 const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
@@ -21,6 +23,10 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedVentaId, setSelectedVentaId] = useState();
     const [ventaEditando, setVentaEditando] = useState<number | null>(null);
+     const isMobile = useBreakpointValue(
+        { base: true, xl: false },
+        { fallback: "base" }
+      );
 
   const agregarProducto = () => {
     setProductosSeleccionados([
@@ -59,6 +65,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
         cantidad: p.cantidad,
         subtotal: precio * p.cantidad,
         imei: p.imei || "",
+        descripcion: p.color ? `${p.capacidad} - ${p.color}` : ""
       };
     });
     console.log("producto formateado", productosFormateados)
@@ -95,13 +102,14 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
   };
 
   const obtenerNombreProducto = (producto) => {
+    console.log(producto)
     if (producto.categoria === 3) {
       return producto.nombre || "Accesorio sin nombre";
     }
     if (producto.modeloId) {
       const modelo = modelos.find((m) => m.id === producto.modeloId);
       return modelo
-        ? `${modelo.nombre} ${producto.capacidad} - ${producto.color}`
+        ? `${modelo.nombre}`
         : "Modelo no encontrado";
     }
   
@@ -109,6 +117,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
   };
 
   const editarVenta = (venta) => {
+    console.log("venta aca",venta)
     setFecha(venta.fecha_venta);
     setProductosSeleccionados(
       venta.productos.map((p) => ({
@@ -121,7 +130,6 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas }: any) => {
     setVentaEditando(venta.id);
   };
   
-
   const actualizarVenta = async () => {
     const productosFormateados = productosSeleccionados.map((p) => {
       const producto = productos.find((prod) => prod.id == p.id);
@@ -195,7 +203,7 @@ const handleDeleteConfirm = () => {
 }
 
   return (
-    <Box p={5}>
+    <Box p={{ base: 0, md: 5 }}>
       <Box bg="white" p={5} borderRadius="md" boxShadow="md" mb={5}>
         <Flex flexDirection={"row"} gap={{base: 2, md:6}}>
         <FormControl mb={4}>
@@ -241,7 +249,7 @@ const handleDeleteConfirm = () => {
                 >
                   {productos.map((producto) => (
                     <option key={producto.id} value={producto.id}>
-                      {obtenerNombreProducto(producto)} - Stock: {producto.stock}
+                      {obtenerNombreProducto(producto)} {producto.capacidad} {producto.color} - Stock: {producto.stock}
                     </option>
                   ))}
                 </Select>
@@ -314,11 +322,12 @@ const handleDeleteConfirm = () => {
       </Box>
 
       <Box bg="white" p={5} borderRadius="md" boxShadow="md">
-  <Text fontSize="xl" mb={4} fontWeight="bold" color={"gray.800"}>
+  <Text fontSize={{base:"18", md:"20px"}} mb={4} fontWeight="bold" color={"gray.800"}>
     Ventas Registradas
   </Text>
 
-  <Box overflowY="auto">
+{!isMobile ? (
+ <Box overflowY="auto">
     <Table size="sm">
       <Thead position="sticky" top={0} bg="white" zIndex={1}>
         <Tr >
@@ -349,7 +358,6 @@ const handleDeleteConfirm = () => {
             <Td textAlign={"center"}>${venta.total}</Td>
             <Td>
  <Flex justifyContent={"center"} gap={2}>
-                          <Tooltip label={"Editar"}>
                             <IconButton
                               icon={<MdEdit />}
                               aria-label="Editar"
@@ -358,8 +366,6 @@ const handleDeleteConfirm = () => {
                               variant="ghost"
                               onClick={() => editarVenta(venta)}
                             />
-                          </Tooltip>
-                          <Tooltip label={"Eliminar"}>
                             <IconButton
                               icon={<MdDelete />}
                               onClick={() => editarVenta(venta)}
@@ -368,7 +374,6 @@ const handleDeleteConfirm = () => {
                               color="red.500"
                               variant="ghost"
                             />
-                          </Tooltip>
                           </Flex>
 </Td>
 
@@ -377,6 +382,16 @@ const handleDeleteConfirm = () => {
       </Tbody>
     </Table>
   </Box>
+):(
+  <Box w={"100%"}>
+  {ventas?.map((venta, index) => (
+   
+    <CardMobileVentas key={index} venta={venta} editarVenta={editarVenta} />
+  ))}
+   </Box>
+
+)}
+ 
 </Box>
 
   <ModalConfirmacionDelete isOpen ={isOpen} onClose={onClose} handleDeleteConfirm={handleDeleteConfirm} />

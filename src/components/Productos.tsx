@@ -56,6 +56,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
 
   const cancelRef = useRef(null);
   const [productoAEliminar, setProductoAEliminar] = useState<any>(null);
+  const [accesorioAEliminar, setAccesorioAEliminar] = useState<any>(null);
 
 
   const [mostrarBuscadorMobile, setMostrarBuscadorMobile] = useState(false);
@@ -116,7 +117,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
 
 
   return (
-    <Box p={{ base: 1, md: 5 }} bg={"gray.100"}
+    <Box p={{ base: 0, md: 5 }} bg={"gray.100"}
     >
       <Flex mb={5}>
         <Button
@@ -282,7 +283,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           <Box w={"100%"}>
             <Flex justify="space-between" align="center" mb={3} wrap="wrap">
               <Flex direction="row" align="center" gap={2}>
-                <Text fontSize="20px" fontWeight="bold">
+                <Text fontSize={{base:"18", md:"20px"}} fontWeight="bold">
                   Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
                 </Text>
 
@@ -301,12 +302,12 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                   <IconButton
                     icon={<SearchIcon />}
                     aria-label="Buscar"
-                    size="sm"
+                    size="xs"
                     onClick={() => setMostrarBuscadorMobile((prev) => !prev)}
                   />
                 )}
               </Flex>
-              <ButtonGroup isAttached size="sm" mt={{ base: 2, sm: 0 }}>
+              <ButtonGroup isAttached size={{base: "xs", md:"sm"}} mt={{ base: 2, sm: 0 }}>
                 <Button
                   colorScheme={tipoCelulares === "nuevos" ? "blue" : "gray"}
                   onClick={() => setTipoCelulares("nuevos")}
@@ -520,6 +521,8 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 onExpandir={() => toggleExpandirFila(accesorio.id)}
                 expandido={filaExpandida === accesorio.id}
                 actualizarStock={actualizarStock}
+                openConfirmDialog={openConfirmDialog}
+                setAccesorioAEliminar={setAccesorioAEliminar}
               />
             ))}
           </Box>
@@ -554,7 +557,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
       )}
       <ModalConfirmacionDelete isOpen={isOpen} onClose={onClose} handleDeleteConfirm={handleDeleteConfirm} />
 
-      {productoAEliminar && (
+      {productoAEliminar || accesorioAEliminar && (
         <AlertDialog
           isOpen={isConfirmDialogOpen}
           leastDestructiveRef={cancelRef}
@@ -563,7 +566,9 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                {`${obtenerNombreModelo(productoAEliminar.modeloId)} ${productoAEliminar.capacidad} ${productoAEliminar.color}`}
+                {productoAEliminar ? `${obtenerNombreModelo(productoAEliminar.modeloId)} ${productoAEliminar.capacidad} ${productoAEliminar.color}` :
+                accesorioAEliminar.nombre
+                }
               </AlertDialogHeader>
 
               <AlertDialogBody>
@@ -580,6 +585,8 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                     if (productoAEliminar) {
                       actualizarStock(productoAEliminar.id, 0);
                       setProductoAEliminar(null);
+                    }else{
+                      actualizarStock(accesorioAEliminar.id, 0)
                     }
                     closeConfirmDialog();
                   }}
