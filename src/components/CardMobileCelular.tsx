@@ -2,40 +2,61 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido ,actualizarStock} : any) => {
-    return (
-      <Box
+export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, actualizarStock, setProductoAEliminar, openConfirmDialog }: any) => {
+  return (
+    <Box
       w={"100%"}
-        p={2}
-        mb={2}
-        borderRadius="md"
-        boxShadow="md"
-        bg="white"
-        borderLeft="5px solid #F6AD55"
-      >
-        <Flex direction="column" gap={1}>
-          <Text fontWeight={500}>{producto.modelo} {producto.capacidad} - {producto.color}</Text>
+      p={2}
+      mb={2}
+      borderRadius="md"
+      boxShadow="md"
+      bg="white"
+      borderLeft="5px solid #F6AD55"
+    >
+      <Flex direction={"row"} justifyContent={"space-between"}>
+        <Flex direction={{ base: "column", md: "row" }} justifyContent={"space-between"} w={{ base: "auto", md: "90%" }}>
+          <Flex>
+            <IconButton
+              icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
+              aria-label="Expandir"
+              size="sm"
+              color="gray.600"
+              variant="ghost"
+              onClick={onExpandir}
+            />
+            <Text fontWeight={500}>{producto.modelo} {producto.capacidad} - {producto.color}</Text>
+          </Flex>
+
+          
+          <Flex justifyContent="space-between" alignItems="center" w={"80px"}  mr={4}>
+              <IconButton
+           
+                icon={<MinusIcon />}
+                aria-label="Disminuir stock"
+                size="xs"
+
+                onClick={() => {
+                  if (producto.stock === 1) {
+                    setProductoAEliminar(producto);
+                    openConfirmDialog();
+                  } else {
+                    actualizarStock(producto.id, producto.stock - 1);
+                  }
+                }}
+              />
+              <Text minW="20px" fontSize={"17px"} textAlign="center">{producto.stock}</Text>
+              <IconButton
+                icon={<AddIcon />}
+                aria-label="Aumentar stock"
+                size="xs"
+
+
+                onClick={() => actualizarStock(producto.id, producto.stock + 1)}
+              />
+            </Flex>
+
         </Flex>
-     
-  
-        <Flex justify="space-between" mt={3} gap={2}>
-        <Flex justifyContent="center" alignItems="center" gap={2}>
-                      <IconButton
-                        icon={<MinusIcon />}
-                        aria-label="Disminuir stock"
-                        size="sm"
-                        onClick={() => actualizarStock(producto.id, producto.stock - 1)}
-                        isDisabled={producto.stock <= 0}
-                      />
-                      {producto.stock}
-                      <IconButton
-                        icon={<AddIcon />}
-                        aria-label="Aumentar stock"
-                        size="sm"
-                        onClick={() => actualizarStock(producto.id, producto.stock + 1)}
-                      />
-                    </Flex>
-                    <Box>
+        <Box>
           <Tooltip label="Editar">
             <IconButton
               icon={<MdEdit />}
@@ -56,26 +77,16 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
               onClick={onEliminar}
             />
           </Tooltip>
-          <Tooltip label="Precios">
-            <IconButton
-              icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
-              aria-label="Expandir"
-              size="sm"
-              color="gray.600"
-              variant="ghost"
-              onClick={onExpandir}
-            />
-          </Tooltip>
-          </Box>
+
+        </Box>
+      </Flex>
+
+      {expandido && (
+        <Flex p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
+          <Text><strong>Mayorista:</strong> ${producto.mayorista} <strong> Minorista:</strong> ${producto.minorista} </Text>
+          <Text><strong> Valor Neto:</strong> ${producto.valorNeto}</Text>
         </Flex>
-  
-        {expandido && (
-          <Box mt={2} bg="gray.50" p={2} borderRadius="md">
-            <Text><strong>Mayorista:</strong> ${producto.mayorista} <strong> Minorista:</strong> ${producto.minorista}</Text>
-            <Text><strong>Valor Neto:</strong> ${producto.valorNeto}</Text>
-          </Box>
-        )}
-      </Box>
-    );
-  };
-  
+      )}
+    </Box>
+  );
+};

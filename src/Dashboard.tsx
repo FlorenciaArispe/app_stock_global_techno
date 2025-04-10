@@ -10,12 +10,17 @@ import {
   DrawerOverlay,
   DrawerContent,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
-import { HiMenu } from "react-icons/hi";
+import { HiMenu, HiOutlineLogout } from "react-icons/hi";
 import Ventas from "./components/Ventas";
 import Productos from "./components/Productos";
 import { deleteProducto } from "./supabase/productos.service";
 import supabase from "./supabase/supabase.service";
+import { FaUser } from "react-icons/fa";
 
 const categorias = [
   { id: 1, nombre: "Celular Nuevo" },
@@ -87,7 +92,13 @@ function Dashboard(onLogout: any) {
   }
 
   return (
-    <Box bg="gray.100" h={"100vh"}>
+    <Box bg="gray.100" h={"100vh"}  overflowY="scroll"
+    css={{
+      scrollbarWidth: "none", // Firefox
+      "&::-webkit-scrollbar": {
+        display: "none",       // Chrome, Safari
+      },
+    }}>
       <Flex bg="gray.800" p={4} align="center" justify="space-between" w={"100%"}>
         <Text ml={{base:1, md:4}} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
           Stock Global Technology
@@ -103,15 +114,33 @@ function Dashboard(onLogout: any) {
             onClick={() => setActiveScreen("productos")} isActive={activeScreen === "productos"}>
             Productos
           </Button>
-          <Button
+          {/* <Button
             onClick={() => supabase.auth.signOut()}
             variant="ghost" color="white" fontWeight="bold"
           >
             Cerrar sesión
-          </Button>
-
-
+          </Button> */}
+<Menu>
+  <MenuButton
+  ml={4}
+    as={IconButton}
+    icon={<FaUser />}
+    variant="ghost"
+    color="white"
+    _hover={{ bg: "gray.700" }}
+    _active={{ bg: "gray.600" }}
+  />
+  <MenuList>
+    <MenuItem
+      icon={<HiOutlineLogout />}
+      onClick={() => supabase.auth.signOut()}
+    >
+      Cerrar sesión
+    </MenuItem>
+  </MenuList>
+</Menu>
         </Flex>
+       
         <IconButton aria-label="Open menu" icon={<HiMenu />}
           display={{ base: "flex", md: "none" }} onClick={onOpen}
           color="white" bg="transparent" _hover={{ bg: "gray.700" }}
@@ -122,11 +151,14 @@ function Dashboard(onLogout: any) {
         <DrawerOverlay>
           <DrawerContent bg="gray.800">
             <DrawerBody>
-              <Button w="100%" mb={4} variant="ghost" color="white" fontWeight="bold"
+            <Text textAlign={"center"} ml={{base:1, md:4}} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
+          Stock Global Technology
+        </Text>
+              <Button mt={4} w="100%" variant="ghost" color="white" fontWeight="bold"
                 onClick={() => { setActiveScreen("ventas"); onClose(); }}>
                 Ventas
               </Button>
-              <Button w="100%" variant="ghost" color="white" fontWeight="bold"
+              <Button mb={4} w="100%" variant="ghost" color="white" fontWeight="bold"
                 onClick={() => { setActiveScreen("productos"); onClose(); }}>
                 Productos
               </Button>

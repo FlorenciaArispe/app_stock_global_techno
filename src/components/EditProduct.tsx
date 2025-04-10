@@ -47,6 +47,11 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
     }
   };
 
+  const capitalizarPrimeraLetra = (texto: string) => {
+    if (!texto) return "";
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  };
+
   const handleGuardar = async () => {
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal: any;
@@ -113,7 +118,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
     const dataToUpdate = {
       categoria: categoriaId,
       modeloId: modeloFinal,
-      color,
+      color: capitalizarPrimeraLetra(color),
       capacidad,
       stock,
       valorNeto,

@@ -16,7 +16,6 @@ import supabase from '../supabase/supabase.service'
 import { InputGroup, InputRightElement, IconButton } from '@chakra-ui/react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 
-
 interface LoginProps {
   onLogin: (session: any) => void
 }
@@ -32,14 +31,11 @@ export default function Login({ onLogin }: LoginProps) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-
     setIsLoading(false)
-
     if (error) {
       setError('Usuario o contraseña incorrectos')
       toast({
@@ -58,22 +54,16 @@ export default function Login({ onLogin }: LoginProps) {
   return (
     <Box minH="100vh" bg="#0E2640" display="flex" alignItems="center" justifyContent="center">
       <Box bg="white" borderRadius="25px" boxShadow="lg" w={{ base: '350px', md: '450px', lg: '850px' }}>
-
-
         <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="center">
-
-          {/* Sección de inputs */}
           <Box flex="1" p={4}>
             <VStack p={4} spacing={6} as="form" onSubmit={handleLogin}>
               <Heading
                 size="lg"
                 color="#345070"
                 fontWeight={700}
-              /*  display={{ base: 'block', md: 'none' }}*/
               >
                 Sign in
               </Heading>
-
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
@@ -83,7 +73,6 @@ export default function Login({ onLogin }: LoginProps) {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </FormControl>
-
               <FormControl isRequired>
                 <FormLabel>Contraseña</FormLabel>
                 <InputGroup>
@@ -104,9 +93,7 @@ export default function Login({ onLogin }: LoginProps) {
                   </InputRightElement>
                 </InputGroup>
               </FormControl>
-
               {error && <Text color="red.500">{error}</Text>}
-
               <Button
                 type="submit"
                 bg={"#345070"}
@@ -127,7 +114,6 @@ export default function Login({ onLogin }: LoginProps) {
               borderTopRightRadius="23px"
               borderBottomRightRadius="23px"
               borderBottomLeftRadius="50px"
-
             />
           </Box>
 
