@@ -170,8 +170,9 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
     <Modal  isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
       <ModalOverlay />
       <ModalContent
-        mt={{ base: '0', md: '2', lg: '20' }}
-      >
+  mt={{ base: '0', md: '2', lg: '20' }}
+  borderTopRadius={{ base: '0', md: 'md' }}
+>
         <ModalHeader>{tituloModal}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

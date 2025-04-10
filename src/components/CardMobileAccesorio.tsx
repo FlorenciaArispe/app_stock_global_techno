@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, actualizarStock }: any) => {
+export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, actualizarStock ,openConfirmDialog, setAccesorioAEliminar}: any) => {
   return (
     <Box
       w={"100%"}
@@ -18,9 +18,10 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
 
           <Flex>
               <IconButton
+               mr={2}
                 icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
                 aria-label="Expandir"
-                size="sm"
+                size="xs"
                 color="gray.600"
                 variant="ghost"
                 onClick={onExpandir}
@@ -28,12 +29,19 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
           <Text fontWeight={500}>{accesorio.nombre}</Text>
           </Flex>
 
-          <Flex justifyContent="space-between" alignItems="center" w={"80px"}  mr={4}>
+          <Flex justifyContent="space-between" alignItems="center" w={"80px"} mt={{base:1, md:0}}  ml={{base:8, md:0}} mr={4}>
             <IconButton
               icon={<MinusIcon />}
               aria-label="Disminuir stock"
               size="xs"
-              onClick={() => actualizarStock(accesorio.id, accesorio.stock - 1)}
+              onClick={() => {
+                if (accesorio.stock === 1) {
+                  setAccesorioAEliminar(accesorio);
+                  openConfirmDialog();
+                } else {
+                  actualizarStock(accesorio.id, accesorio.stock - 1);
+                }
+              }}
               isDisabled={accesorio.stock <= 0}
             />
             {accesorio.stock}

@@ -13,6 +13,7 @@ export type Venta = {
     cantidad: number;
     subtotal: number;
     imei: string; 
+    descripcion: string;
   };
 export async function getVentas(): Promise<Venta[] | null> {
     const { data, error } = await supabase

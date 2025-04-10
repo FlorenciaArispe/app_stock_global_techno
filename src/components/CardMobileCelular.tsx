@@ -17,9 +17,10 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
         <Flex direction={{ base: "column", md: "row" }} justifyContent={"space-between"} w={{ base: "auto", md: "90%" }}>
           <Flex>
             <IconButton
+             mr={2}
               icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
               aria-label="Expandir"
-              size="sm"
+              size="xs"
               color="gray.600"
               variant="ghost"
               onClick={onExpandir}
@@ -28,7 +29,7 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
           </Flex>
 
           
-          <Flex justifyContent="space-between" alignItems="center" w={"80px"}  mr={4}>
+          <Flex justifyContent="space-between" alignItems="center"  mt={{base:1, md:0}} w={"80px"} ml={{base:8, md:0}} mr={4}>
               <IconButton
            
                 icon={<MinusIcon />}
@@ -56,7 +57,7 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
             </Flex>
 
         </Flex>
-        <Box>
+        <Flex>
           <Tooltip label="Editar">
             <IconButton
               icon={<MdEdit />}
@@ -78,7 +79,7 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
             />
           </Tooltip>
 
-        </Box>
+        </Flex>
       </Flex>
 
       {expandido && (
