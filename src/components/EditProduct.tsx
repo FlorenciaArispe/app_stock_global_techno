@@ -91,10 +91,9 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
     }
 
     const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
+    
     const duplicado = productos.find((p: any) => {
-      if (p.id === producto.id) return false; 
-
+      if (p.id === producto.id) return false;
       if (categoriaSeleccionada === "Accesorio") {
         return p.categoria === categoriaId &&
           normalizeString(p.nombre) === normalizeString(nombreAccesorio);
@@ -128,10 +127,8 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
     };
 
     try {
-      console.log("data", dataToUpdate)
       await updateProducto(producto.id, dataToUpdate);
       await fetchProductos();
-
       onClose();
       toast({
         title: "Producto actualizado",
@@ -192,7 +189,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                   )}
                 </FormControl>
               )}
-
               <FormControl mb={3} isInvalid={!!errors.color}>
                 <FormLabel>Color</FormLabel>
                 <Input value={color}
@@ -200,7 +196,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                     setColor(e.target.value);
                     setErrors((prev) => ({ ...prev, color: "" }));
                     if (errors.general) {
-                      console.log("entre")
                       setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                     }
                   }}
@@ -209,7 +204,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                   <Text color="red.500" fontSize="sm">{errors.color}</Text>
                 )}
               </FormControl>
-
               <FormControl isInvalid={!!errors.capacidad}>
                 <FormLabel>Capacidad</FormLabel>
                 <Select
@@ -219,7 +213,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                     setCapacidad(e.target.value);
                     setErrors((prev) => ({ ...prev, capacidad: "" }));
                     if (errors.general) {
-                      console.log("entre");
                       setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
                     }
                   }}
@@ -242,7 +235,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                   setNombreAccesorio(e.target.value)
                   setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
                   if (errors.general) {
-                    console.log("entre")
                     setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                   }
                 }}
@@ -254,7 +246,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
               )}
             </FormControl>
           )}
-
           <Flex gap={2}>
             <FormControl mb={3} isInvalid={!!errors.stock}>
               <FormLabel>Stock</FormLabel>
@@ -271,7 +262,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
                 </Text>
               )}
             </FormControl>
-
             <FormControl mb={3} isInvalid={!!errors.valorNeto}>
               <FormLabel>Valor Neto</FormLabel>
               <Input type="number" value={valorNeto}
@@ -313,7 +303,6 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
             </FormControl>
           </Flex>
         </ModalBody>
-
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleGuardar}>
             Guardar Cambios

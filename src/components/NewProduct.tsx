@@ -39,17 +39,15 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
   const handleAgregarProducto = async () => {
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal;
-
     if (modelo === "Otro") {
       const res = await createModelo(modeloOtro)
       modeloFinal = res;
     }
     else {
-      const modeloObj = modelos.find((mod : any) => mod.nombre === modelo)
+      const modeloObj = modelos.find((mod: any) => mod.nombre === modelo)
       modeloFinal = modeloObj?.id
     }
-
-    const categoriaObj = categorias.find((cat : any) => cat.nombre === categoriaSeleccionada);
+    const categoriaObj = categorias.find((cat: any) => cat.nombre === categoriaSeleccionada);
     const categoriaId = categoriaObj?.id;
 
     if (!categoriaSeleccionada) validationErrors.categoria = "La categoría es obligatoria.";
@@ -153,7 +151,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
 
   const handleModeloOtroChange = (value: string) => {
     setModeloOtro(value);
-    const existe = modelos.some((m : any) => m.nombre.toLowerCase() === value.toLowerCase());
+    const existe = modelos.some((m: any) => m.nombre.toLowerCase() === value.toLowerCase());
     if (existe) {
       setModeloError("Este modelo ya existe. Buscalo en la lista de arriba.");
     } else {
@@ -167,12 +165,12 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
   };
 
   return (
-    <Modal  isOpen={isOpen} onClose={() => { setStep(1); onClose(); }}>
+    <Modal isOpen={isOpen} onClose={() => { setStep(1); onClose(); }} size={{ base: "full", md: "xl" }}>
       <ModalOverlay />
       <ModalContent
-  mt={{ base: '0', md: '2', lg: '20' }}
-  borderTopRadius={{ base: '0', md: 'md' }}
->
+        mt={{ base: '0', md: '5', lg: '20' }}
+        borderTopRadius={{ base: '0', md: 'md' }}
+      >
         <ModalHeader>{tituloModal}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -183,24 +181,22 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
               </Text>
             </Box>
           )}
-
           {step === 1 && (
-     <FormControl>
-     <FormLabel>Selecciona la categoría</FormLabel>
-     <Select
-       placeholder="Seleccione una categoría"
-       value={categoriaSeleccionada}
-       onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-     >
-       {categorias.map((cat: any) => (
-         <option key={cat.id} value={cat.nombre}>
-           {cat.nombre}
-         </option>
-       ))}
-     </Select>
-   </FormControl>
+            <FormControl>
+              <FormLabel>Selecciona la categoría</FormLabel>
+              <Select
+                placeholder="Seleccione una categoría"
+                value={categoriaSeleccionada}
+                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+              >
+                {categorias.map((cat: any) => (
+                  <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
           )}
-
           {step === 2 && categoriaSeleccionada !== "Accesorio" && (
             <>
               <Flex flexDirection={"row"} gap={6} mb={4}>
@@ -215,7 +211,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       setModeloError("");
                       setErrors((prev) => ({ ...prev, modelo: "" }));
                       if (errors.general) {
-                        console.log("entre")
                         setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                       }
                     }}
@@ -239,13 +234,11 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       value={modeloOtro}
                       onChange={(e) => {
                         if (errors.general) {
-                          console.log("entre")
+
                           setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                         }
                         handleModeloOtroChange(e.target.value)
-
-                      }
-                      }
+                      }}
                     />
                     {modeloError && (
                       <Text color="red.500" fontSize="sm">
@@ -264,7 +257,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       setColor(e.target.value);
                       setErrors((prev) => ({ ...prev, color: "" }));
                       if (errors.general) {
-                        console.log("entre")
                         setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                       }
                     }}
@@ -273,7 +265,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     <Text color="red.500" fontSize="sm">{errors.color}</Text>
                   )}
                 </FormControl>
-
                 <FormControl isInvalid={!!errors.capacidad}>
                   <FormLabel>Capacidad</FormLabel>
                   <Select
@@ -283,7 +274,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       setCapacidad(e.target.value);
                       setErrors((prev) => ({ ...prev, capacidad: "" }));
                       if (errors.general) {
-                        console.log("entre");
+
                         setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
                       }
                     }}
@@ -295,11 +286,9 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
                   )}
                 </FormControl>
-
               </Flex>
             </>
           )}
-
           {step === 2 && (
             <>
               {categoriaSeleccionada === "Accesorio" && (
@@ -309,7 +298,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     setNombreAccesorio(e.target.value)
                     setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
                     if (errors.general) {
-                      console.log("entre")
                       setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                     }
                   }} />
@@ -319,7 +307,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     </Text>
                   )}
                 </FormControl>
-
               )}
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isInvalid={!!errors.stock}>
@@ -360,7 +347,6 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                     </Text>
                   )}
                 </FormControl>
-
                 <FormControl isInvalid={!!errors.mayorista}>
                   <FormLabel>Precio Mayorista</FormLabel>
                   <Input type="number" value={mayorista} onChange={(e) => {
@@ -390,13 +376,11 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
               Atrás
             </Button>
           )}
-
           {step === 1 && (
             <Button colorScheme="blue" onClick={() => setStep(2)} isDisabled={!categoriaSeleccionada}>
               Siguiente
             </Button>
           )}
-
           {step === 2 && (
             <Button
               colorScheme="green"

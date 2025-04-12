@@ -25,6 +25,12 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 import NewProduct from "./NewProduct";
@@ -46,6 +52,9 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     onOpen: openConfirmDialog,
     onClose: closeConfirmDialog,
   } = useDisclosure();
+  const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
+  const { isOpen: isVentaOpen, onOpen: onVentaOpen, onClose: onVentaClose } = useDisclosure();
+  const [productoModificar, setProductoModificar] = useState<{ id: number, stockNuevo: number } | null>(null);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const isMobile = useBreakpointValue(
@@ -53,18 +62,13 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     { fallback: "base" }
   );
   const isMobile2 = useBreakpointValue({ base: true, sm: false }, { fallback: "base" });
-
   const cancelRef = useRef(null);
-  const [productoAEliminar, setProductoAEliminar] = useState<any>(null);
-  const [accesorioAEliminar, setAccesorioAEliminar] = useState<any>(null);
-
-
+  const [productoAEliminar, setProductoAEliminar] = useState(null);
+  const [accesorioAEliminar, setAccesorioAEliminar] = useState(null);
   const [mostrarBuscadorMobile, setMostrarBuscadorMobile] = useState(false);
   const [mostrarBuscadorAccesoriosMobile, setMostrarBuscadorAccesoriosMobile] = useState(false);
-
   const [busquedaCelulares, setBusquedaCelulares] = useState("");
   const [busquedaAccesorios, setBusquedaAccesorios] = useState("");
-
   const obtenerNombreModelo = (modeloId: number) => {
     const modelo = modelos.find((m: any) => m.id === modeloId);
     return modelo ? modelo.nombre : "null";
@@ -83,13 +87,11 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     return coincideCategoria && coincideBusqueda;
   });
 
-
   const accesoriosFiltrados = productos.filter(
     (producto: any) =>
       producto.categoria === 3 &&
       producto.nombre?.toLowerCase().includes(busquedaAccesorios.toLowerCase())
   );
-
 
   const toggleExpandirFila = (id: number) => {
     setFilaExpandida(filaExpandida === id ? null : id);
@@ -99,22 +101,50 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     onDelete(selectedProductId)
   }
 
-
   function handleEditarProducto(producto: any) {
-    console.log("producto seleccionado", producto)
     setProductoSeleccionado(producto);
     setIsModalUpdateOpen(true);
   }
 
-  const actualizarStock = async (id, stockNuevo) => {
-    if (stockNuevo <= 0) {
-      await deleteProducto(id);
+  const handleDelete = async (id) => {
+    await deleteProducto(id);
+    await fetchProductos();
+    closeConfirmDialog()
+  }
+
+  const actualizarStock = async (producto, stockNuevo) => {
+    const id = producto.id;
+    setProductoModificar({ id, stockNuevo });
+
+    if (producto.categoria == 3) {
+      setProductoAEliminar(null)
+      setAccesorioAEliminar(producto)
+
     } else {
-      await updateStockProducto(id, stockNuevo);
+      setAccesorioAEliminar(null)
+      setProductoAEliminar(producto)
     }
-    fetchProductos();
+    onConfirmOpen();
   };
 
+  const confirmarActualizarStock = async () => {
+    if (!productoModificar) return;
+    const { id, stockNuevo } = productoModificar;
+
+    if (stockNuevo <= 0) {
+      openConfirmDialog()
+    } else {
+      await updateStockProducto(id, stockNuevo);
+      await fetchProductos();
+    }
+    setProductoModificar(null);
+    onConfirmClose();
+  };
+
+  const manejarRegistrarVenta = () => {
+    onConfirmClose();
+    onVentaOpen(); 
+  };
 
   return (
     <Box p={{ base: 0, md: 5 }} bg={"gray.100"}
@@ -137,7 +167,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         align="start"
         flexDirection={{ base: "column", md: "column", lg: "column", xl: "row" }}
       >
-        {/* Card de Celulares */}
+
         {!isMobile ? (
           <Card
             w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
@@ -190,24 +220,16 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                               icon={<MinusIcon />}
                               aria-label="Disminuir stock"
                               size="sm"
-                              onClick={() => {
-                                if (producto.stock === 1) {
-                                  setProductoAEliminar(producto); 
-                                  openConfirmDialog(); 
-                                } else {
-                                  actualizarStock(producto.id, producto.stock - 1);
-                                }
-                              }}
+                              onClick={() => actualizarStock(producto, producto.stock - 1)}
                             />
                             <Text minW="20px" textAlign="center">{producto.stock}</Text>
                             <IconButton
                               icon={<AddIcon />}
                               aria-label="Aumentar stock"
                               size="sm"
-                              onClick={() => actualizarStock(producto.id, producto.stock + 1)}
+                              onClick={() => actualizarStock(producto, producto.stock + 1)}
                             />
                           </Flex>
-
                         </Td>
                         <Td textAlign={"center"}>
                           <Flex justifyContent={"center"} gap={2}>
@@ -250,10 +272,8 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                                 onClick={() => toggleExpandirFila(producto.id)}
                               />
                             </Tooltip>
-
                           </Flex>
                         </Td>
-
                       </Tr>
                       {filaExpandida === producto.id && (
                         <Tr>
@@ -277,13 +297,12 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 </Tbody>
               </Table>
             </CardBody>
-
           </Card>
         ) : (
           <Box w={"100%"}>
             <Flex justify="space-between" align="center" mb={3} wrap="wrap">
               <Flex direction="row" align="center" gap={2}>
-                <Text fontSize={{base:"18", md:"20px"}} fontWeight="bold">
+                <Text fontSize={{ base: "18", md: "20px" }} fontWeight="bold">
                   Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
                 </Text>
 
@@ -298,6 +317,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                     onChange={(e) => setBusquedaCelulares(e.target.value)}
                   />
                 )}
+
                 {isMobile2 && (
                   <IconButton
                     icon={<SearchIcon />}
@@ -307,7 +327,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                   />
                 )}
               </Flex>
-              <ButtonGroup isAttached size={{base: "xs", md:"sm"}} mt={{ base: 2, sm: 0 }}>
+              <ButtonGroup isAttached size={{ base: "xs", md: "sm" }} mt={{ base: 2, sm: 0 }}>
                 <Button
                   colorScheme={tipoCelulares === "nuevos" ? "blue" : "gray"}
                   onClick={() => setTipoCelulares("nuevos")}
@@ -335,6 +355,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 onChange={(e) => setBusquedaCelulares(e.target.value)}
               />
             )}
+            
             {celulares.map((producto: any) => (
               <CardMobileCelular
                 key={producto.id}
@@ -350,14 +371,11 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 onExpandir={() => toggleExpandirFila(producto.id)}
                 expandido={filaExpandida === producto.id}
                 actualizarStock={actualizarStock}
-                setProductoAEliminar={setProductoAEliminar}
-                openConfirmDialog={openConfirmDialog}
               />
             ))}
           </Box>
         )}
 
-        {/* Card de Accesorios */}
         {!isMobile ? (
           <Card
             w={{ base: "100%", md: "100%", lg: "100%", xl: "row" }}
@@ -392,7 +410,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                               icon={<MinusIcon />}
                               aria-label="Disminuir stock"
                               size="sm"
-                              onClick={() => actualizarStock(accesorio.id, accesorio.stock - 1)}
+                              onClick={() => actualizarStock(accesorio, accesorio.stock - 1)}
                               isDisabled={accesorio.stock <= 0}
                             />
                             {accesorio.stock}
@@ -400,7 +418,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                               icon={<AddIcon />}
                               aria-label="Aumentar stock"
                               size="sm"
-                              onClick={() => actualizarStock(accesorio.id, accesorio.stock + 1)}
+                              onClick={() => actualizarStock(accesorio, accesorio.stock + 1)}
                             />
                           </Flex>
                         </Td>
@@ -445,7 +463,6 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                                 onClick={() => toggleExpandirFila(accesorio.id)}
                               />
                             </Tooltip>
-
                           </Flex>
                         </Td>
                       </Tr>
@@ -477,12 +494,10 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
             <Flex direction={
               isMobile && mostrarBuscadorAccesoriosMobile ? "column" : "row"
             } gap={2} mb={2}>
-              {/* Título + lupa en la misma fila */}
               <Flex justify="flex-start" align="center">
                 <Text fontSize="20px" fontWeight="bold">
                   Accesorios
                 </Text>
-
                 {isMobile2 && (
                   <IconButton
                     icon={<SearchIcon />}
@@ -494,8 +509,6 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                   />
                 )}
               </Flex>
-
-              {/* Input de búsqueda (condicional) */}
               {(!isMobile2 || mostrarBuscadorAccesoriosMobile) && (
                 <Input
                   borderRadius="7px"
@@ -508,7 +521,6 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 />
               )}
             </Flex>
-
             {accesoriosFiltrados.map((accesorio: any) => (
               <CardMobileAccesorio
                 key={accesorio.id}
@@ -521,14 +533,12 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 onExpandir={() => toggleExpandirFila(accesorio.id)}
                 expandido={filaExpandida === accesorio.id}
                 actualizarStock={actualizarStock}
-                openConfirmDialog={openConfirmDialog}
-                setAccesorioAEliminar={setAccesorioAEliminar}
               />
             ))}
           </Box>
         )}
-
       </Flex>
+
       {isModalUpdateOpen && (
         <EditProduct
           isOpen={isModalUpdateOpen}
@@ -544,6 +554,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           fetchModelos={fetchModelos}
         />
       )}
+
       {isModalOpen && (
         <NewProduct
           isOpen={isModalOpen}
@@ -555,9 +566,10 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
           fetchModelos={fetchModelos}
         />
       )}
+
       <ModalConfirmacionDelete isOpen={isOpen} onClose={onClose} handleDeleteConfirm={handleDeleteConfirm} />
 
-      {productoAEliminar || accesorioAEliminar && (
+      {(productoAEliminar || accesorioAEliminar) && (
         <AlertDialog
           isOpen={isConfirmDialogOpen}
           leastDestructiveRef={cancelRef}
@@ -567,29 +579,19 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 {productoAEliminar ? `${obtenerNombreModelo(productoAEliminar.modeloId)} ${productoAEliminar.capacidad} ${productoAEliminar.color}` :
-                accesorioAEliminar.nombre
+                  accesorioAEliminar.nombre
                 }
               </AlertDialogHeader>
-
               <AlertDialogBody>
                 ¿Estás seguro de que ya no hay stock de este producto?
               </AlertDialogBody>
-
               <AlertDialogFooter>
                 <Button ref={cancelRef} onClick={closeConfirmDialog}>
                   Cancelar
                 </Button>
                 <Button
                   colorScheme="red"
-                  onClick={() => {
-                    if (productoAEliminar) {
-                      actualizarStock(productoAEliminar.id, 0);
-                      setProductoAEliminar(null);
-                    }else{
-                      actualizarStock(accesorioAEliminar.id, 0)
-                    }
-                    closeConfirmDialog();
-                  }}
+                  onClick={() => handleDelete(productoAEliminar ? productoAEliminar.id : accesorioAEliminar.id)}
                   ml={3}
                 >
                   Aceptar
@@ -600,12 +602,30 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         </AlertDialog>
       )}
 
+      {isConfirmOpen && (
+        <Modal isOpen={isConfirmOpen} onClose={onConfirmClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>¿Quieres registrar la venta o simplemente actualizar el stock?</ModalHeader>
+            <ModalBody>
+              (Si no registras la venta el producto no aparecerá después)
+            </ModalBody>
+            <ModalFooter >
+              <Flex direction={"row"} justifyContent={"center"} w={"100%"}>
+                <Button colorScheme="green" mr={3} onClick={manejarRegistrarVenta}>
+                  Ir a registrar la venta
+                </Button>
+                <Button variant="ghost" onClick={confirmarActualizarStock}>
+                  Solo actualizar stock
+                </Button>
+              </Flex>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+
     </Box>
   );
 }
 
 export default Productos;
-
-
-
-
