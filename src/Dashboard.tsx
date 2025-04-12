@@ -28,56 +28,16 @@ const categorias = [
   { id: 3, nombre: "Accesorio" }
 ]
 
-function Dashboard(onLogout: any) {
+function Dashboard({
+  productos,
+  fetchProductos,
+  ventas,
+  fetchVentas,
+  modelos,
+  fetchModelos
+}: any) {
   const [activeScreen, setActiveScreen] = useState("ventas");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [productos, setProductos] = useState([]);
-  const [modelos, setModelos] = useState([]);
-  const [ventas, setVentas] = useState([]);
-  
-
-  async function fetchProductos() {
-    const { data, error } = await supabase.from('productos').select('*').order('id', { ascending: true });;
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-      console.error(error);
-    }
-    console.log("PRODUCTOS", data)
-
-    setProductos(data || []);
-  }
-
-  async function fetchModelos() {
-    const { data, error } = await supabase.from('Modelo_celular').select('*');
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-      console.error(error);
-    }
-    setModelos(data || []);
-  }
-
-  async function fetchVentas() {
-    const { data, error } = await supabase.from('Ventas').select('*').order('id', { ascending: true });;
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-      console.error(error);
-    }
-    console.log("VENTAS", data)
-
-    setVentas(data || []);
-  }
 
   useEffect(() => {
     fetchProductos()
@@ -92,15 +52,15 @@ function Dashboard(onLogout: any) {
   }
 
   return (
-    <Box bg="gray.100" h={"100vh"}  overflowY="scroll"
-    css={{
-      scrollbarWidth: "none", // Firefox
-      "&::-webkit-scrollbar": {
-        display: "none",       // Chrome, Safari
-      },
-    }}>
-      <Flex bg="gray.800" p={4} align="center" justify="space-between" w={"100%"}>
-        <Text ml={{base:1, md:4}} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
+    <Box bg="gray.100" h={"100vh"} overflowY="scroll"
+      css={{
+        scrollbarWidth: "none", 
+        "&::-webkit-scrollbar": {
+          display: "none", 
+        },
+      }}>
+      <Flex bg="gray.800" p={4} align="center" justify="space-between" w={"100%"} h={{ base: "60px", md: "72px" }}>
+        <Text ml={{ base: 1, md: 4 }} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
           Stock Global Technology
         </Text>
         <Flex display={{ base: "none", md: "flex" }} gap={1} >
@@ -114,33 +74,27 @@ function Dashboard(onLogout: any) {
             onClick={() => setActiveScreen("productos")} isActive={activeScreen === "productos"}>
             Productos
           </Button>
-          {/* <Button
-            onClick={() => supabase.auth.signOut()}
-            variant="ghost" color="white" fontWeight="bold"
-          >
-            Cerrar sesión
-          </Button> */}
-<Menu>
-  <MenuButton
-  ml={4}
-    as={IconButton}
-    icon={<FaUser />}
-    variant="ghost"
-    color="white"
-    _hover={{ bg: "gray.700" }}
-    _active={{ bg: "gray.600" }}
-  />
-  <MenuList>
-    <MenuItem
-      icon={<HiOutlineLogout />}
-      onClick={() => supabase.auth.signOut()}
-    >
-      Cerrar sesión
-    </MenuItem>
-  </MenuList>
-</Menu>
+          <Menu>
+            <MenuButton
+              ml={4}
+              as={IconButton}
+              icon={<FaUser />}
+              variant="ghost"
+              color="white"
+              _hover={{ bg: "gray.700" }}
+              _active={{ bg: "gray.600" }}
+            />
+            <MenuList>
+              <MenuItem
+                icon={<HiOutlineLogout />}
+                onClick={() => supabase.auth.signOut()}
+              >
+                Cerrar sesión
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
-       
+
         <IconButton aria-label="Open menu" icon={<HiMenu />}
           display={{ base: "flex", md: "none" }} onClick={onOpen}
           color="white" bg="transparent" _hover={{ bg: "gray.700" }}
@@ -151,9 +105,9 @@ function Dashboard(onLogout: any) {
         <DrawerOverlay>
           <DrawerContent bg="gray.800">
             <DrawerBody>
-            <Text textAlign={"center"} ml={{base:1, md:4}} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
-          Stock Global Technology
-        </Text>
+              <Text textAlign={"center"} ml={{ base: 1, md: 4 }} fontSize={{ base: "18px", md: "22px" }} fontWeight="bold" color="white">
+                Stock Global Technology
+              </Text>
               <Button mt={4} w="100%" variant="ghost" color="white" fontWeight="bold"
                 onClick={() => { setActiveScreen("ventas"); onClose(); }}>
                 Ventas
@@ -173,7 +127,7 @@ function Dashboard(onLogout: any) {
       </Drawer>
 
       <Box p={5} bg={"gray.100"}>
-        {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} ventas={ventas} fetchVentas={fetchVentas} />}
+        {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} ventas={ventas} fetchVentas={fetchVentas} fetchProductos={fetchProductos} />}
         {activeScreen === "productos" && <Productos productos={productos} categorias={categorias} modelos={modelos} onDelete={handleDeleteProduct} fetchProductos={fetchProductos} fetchModelos={fetchModelos} />}
       </Box>
     </Box>

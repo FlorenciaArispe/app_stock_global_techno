@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, actualizarStock ,openConfirmDialog, setAccesorioAEliminar}: any) => {
+export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, actualizarStock }: any) => {
   return (
     <Box
       w={"100%"}
@@ -15,45 +15,34 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
     >
       <Flex direction={"row"} justifyContent={"space-between"}>
         <Flex direction={{ base: "column", md: "row" }} justifyContent={"space-between"} w={{ base: "auto", md: "90%" }}>
-
           <Flex>
-              <IconButton
-               mr={2}
-                icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
-                aria-label="Expandir"
-                size="xs"
-                color="gray.600"
-                variant="ghost"
-                onClick={onExpandir}
-              />
-          <Text fontWeight={500}>{accesorio.nombre}</Text>
+            <IconButton
+              mr={2}
+              icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
+              aria-label="Expandir"
+              size="xs"
+              color="gray.600"
+              variant="ghost"
+              onClick={onExpandir}
+            />
+            <Text fontWeight={500}>{accesorio.nombre}</Text>
           </Flex>
-
-          <Flex justifyContent="space-between" alignItems="center" w={"80px"} mt={{base:1, md:0}}  ml={{base:8, md:0}} mr={4}>
+          <Flex justifyContent="space-between" alignItems="center" w={"80px"} mt={{ base: 1, md: 0 }} ml={{ base: 8, md: 0 }} mr={4}>
             <IconButton
               icon={<MinusIcon />}
               aria-label="Disminuir stock"
               size="xs"
-              onClick={() => {
-                if (accesorio.stock === 1) {
-                  setAccesorioAEliminar(accesorio);
-                  openConfirmDialog();
-                } else {
-                  actualizarStock(accesorio.id, accesorio.stock - 1);
-                }
-              }}
-              isDisabled={accesorio.stock <= 0}
+              onClick={() => actualizarStock(accesorio, accesorio.stock - 1)}
             />
             {accesorio.stock}
             <IconButton
               icon={<AddIcon />}
               aria-label="Aumentar stock"
               size="xs"
-              onClick={() => actualizarStock(accesorio.id, accesorio.stock + 1)}
+              onClick={() => actualizarStock(accesorio, accesorio.stock + 1)}
             />
           </Flex>
         </Flex>
-
         <Box>
           <Tooltip label="Editar">
             <IconButton
@@ -78,9 +67,8 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
 
         </Box>
       </Flex>
-
       {expandido && (
-       <Flex p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
+        <Flex p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
           <Text><strong>Mayorista:</strong> ${accesorio.mayorista} <strong> Minorista:</strong> ${accesorio.minorista}</Text>
           <Text><strong>Valor Neto:</strong> ${accesorio.valorNeto}</Text>
         </Flex>

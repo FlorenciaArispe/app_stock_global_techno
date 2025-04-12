@@ -11,7 +11,6 @@ async function getProductos() {
     }
     throw error;
   }
-
   return data;
 }
 
@@ -48,7 +47,6 @@ async function createProducto(
     modeloId,
     nombre
   });
-
   if (error) {
     if (error.message === "JWT expired") {
       await supabase.auth.signOut();
@@ -59,12 +57,10 @@ async function createProducto(
 }
 
 async function updateProducto(id: number, data: any) {
-  console.log("aca data",data)
   const { error } = await supabase
     .from("productos")
     .update(data)
     .eq("id", id);
-
   if (error) {
     if (error.message === "JWT expired") {
       await supabase.auth.signOut();
@@ -79,7 +75,6 @@ async function updateStockProducto(id, nuevoStock) {
     .from('productos')
     .update({ stock: nuevoStock })
     .eq('id', id);
-
   if (error) {
     if (error.message === 'JWT expired') {
       await supabase.auth.signOut();
@@ -89,5 +84,4 @@ async function updateStockProducto(id, nuevoStock) {
   }
 }
 
-
-export { getProductos, deleteProducto, createProducto, updateProducto , updateStockProducto};
+export { getProductos, deleteProducto, createProducto, updateProducto, updateStockProducto };

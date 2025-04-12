@@ -116,7 +116,6 @@ export default function Login({ onLogin }: LoginProps) {
               borderBottomLeftRadius="50px"
             />
           </Box>
-
         </Flex>
       </Box>
     </Box>

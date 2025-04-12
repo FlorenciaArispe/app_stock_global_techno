@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, actualizarStock, setProductoAEliminar, openConfirmDialog }: any) => {
+export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, actualizarStock }: any) => {
   return (
     <Box
       w={"100%"}
@@ -17,7 +17,7 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
         <Flex direction={{ base: "column", md: "row" }} justifyContent={"space-between"} w={{ base: "auto", md: "90%" }}>
           <Flex>
             <IconButton
-             mr={2}
+              mr={2}
               icon={expandido ? <MdExpandLess /> : <MdExpandMore />}
               aria-label="Expandir"
               size="xs"
@@ -27,35 +27,21 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
             />
             <Text fontWeight={500}>{producto.modelo} {producto.capacidad} - {producto.color}</Text>
           </Flex>
-
-          
-          <Flex justifyContent="space-between" alignItems="center"  mt={{base:1, md:0}} w={"80px"} ml={{base:8, md:0}} mr={4}>
-              <IconButton
-           
-                icon={<MinusIcon />}
-                aria-label="Disminuir stock"
-                size="xs"
-
-                onClick={() => {
-                  if (producto.stock === 1) {
-                    setProductoAEliminar(producto);
-                    openConfirmDialog();
-                  } else {
-                    actualizarStock(producto.id, producto.stock - 1);
-                  }
-                }}
-              />
-              <Text minW="20px" fontSize={"17px"} textAlign="center">{producto.stock}</Text>
-              <IconButton
-                icon={<AddIcon />}
-                aria-label="Aumentar stock"
-                size="xs"
-
-
-                onClick={() => actualizarStock(producto.id, producto.stock + 1)}
-              />
-            </Flex>
-
+          <Flex justifyContent="space-between" alignItems="center" mt={{ base: 1, md: 0 }} w={"80px"} ml={{ base: 8, md: 0 }} mr={4}>
+            <IconButton
+              icon={<MinusIcon />}
+              aria-label="Disminuir stock"
+              size="xs"
+              onClick={() => actualizarStock(producto, producto.stock - 1)}
+            />
+            <Text minW="20px" fontSize={"17px"} textAlign="center">{producto.stock}</Text>
+            <IconButton
+              icon={<AddIcon />}
+              aria-label="Aumentar stock"
+              size="xs"
+              onClick={() => actualizarStock(producto, producto.stock + 1)}
+            />
+          </Flex>
         </Flex>
         <Flex>
           <Tooltip label="Editar">
@@ -78,7 +64,6 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
               onClick={onEliminar}
             />
           </Tooltip>
-
         </Flex>
       </Flex>
 
