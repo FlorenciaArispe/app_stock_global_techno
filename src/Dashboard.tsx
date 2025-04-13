@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -21,32 +20,25 @@ import Productos from "./components/Productos";
 import { deleteProducto } from "./supabase/productos.service";
 import supabase from "./supabase/supabase.service";
 import { FaUser } from "react-icons/fa";
+import { Modelo, Producto, Venta } from "./types";
+import { fetchProductos } from "./services/fetchData";
+import { useState } from "react";
 
-const categorias = [
-  { id: 1, nombre: "Celular Nuevo" },
-  { id: 2, nombre: "Celular Usado" },
-  { id: 3, nombre: "Accesorio" }
-]
+interface DashboardProps {
+  productos: Producto[];
+  ventas: Venta[];
+  modelos: Modelo[];
+}
 
 function Dashboard({
   productos,
-  fetchProductos,
   ventas,
-  fetchVentas,
   modelos,
-  fetchModelos
-}: any) {
+}: DashboardProps) {
   const [activeScreen, setActiveScreen] = useState("ventas");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    fetchProductos()
-    fetchModelos()
-    fetchVentas()
-
-  }, [])
-
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteProduct = async (id: number): Promise<void> => {
     await deleteProducto(id)
     await fetchProductos()
   }
@@ -127,8 +119,8 @@ function Dashboard({
       </Drawer>
 
       <Box p={5} bg={"gray.100"}>
-        {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} ventas={ventas} fetchVentas={fetchVentas} fetchProductos={fetchProductos} />}
-        {activeScreen === "productos" && <Productos productos={productos} categorias={categorias} modelos={modelos} onDelete={handleDeleteProduct} fetchProductos={fetchProductos} fetchModelos={fetchModelos} />}
+        {activeScreen === "ventas" && <Ventas productos={productos} modelos={modelos} ventas={ventas} />}
+        {activeScreen === "productos" && <Productos productos={productos} modelos={modelos} onDelete={handleDeleteProduct} />}
       </Box>
     </Box>
   );

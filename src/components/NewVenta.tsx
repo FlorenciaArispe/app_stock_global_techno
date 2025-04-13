@@ -3,9 +3,26 @@ import { MdClose } from 'react-icons/md';
 import { deleteProducto, updateStockProducto } from '../supabase/productos.service';
 import { useState } from 'react';
 import { createVenta } from '../supabase/ventas.service';
+import { Modelo, Producto } from '../types';
+import { fetchProductos, fetchVentas } from '../services/fetchData';
 
-const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onClose }: any) => {
-  const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+interface ProductoSeleccionado {
+  id: string;
+  cantidad: string;
+  tipoVenta: string;
+  imei: string;
+  descripcion: string;
+}
+
+interface NewVentaProps {
+  modelos: Modelo[];
+  productos: Producto[];
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
+  const [productosSeleccionados, setProductosSeleccionados] = useState<ProductoSeleccionado[]>([]); 
   const [fecha_venta, setFecha] = useState(new Date().toISOString().split("T")[0]);
   const [cliente, setCliente] = useState("");
   const [errorCantidad, setErrorCantidad] = useState<string | null>(null);
@@ -14,11 +31,11 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
   const agregarProducto = () => {
     setProductosSeleccionados([
       ...productosSeleccionados,
-      { id: "", cantidad: "", tipoVenta: "minorista", imei: "" },
+      { id: "", cantidad: "", tipoVenta: "minorista", imei: "" , descripcion: ""},
     ]);
   };
 
-  const actualizarProducto = (index, key, value) => {
+  const actualizarProducto = (index: number, key: keyof ProductoSeleccionado, value: string) => {
     const nuevosProductos = [...productosSeleccionados];
     nuevosProductos[index][key] = value;
     setProductosSeleccionados(nuevosProductos);
@@ -26,7 +43,8 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
 
   const guardarVenta = async () => {
     for (const p of productosSeleccionados) {
-      if (!p.cantidad || p.cantidad <= 0) {
+      const cantidad = Number(p.cantidad); 
+      if (!cantidad || cantidad <= 0) {
         setErrorCantidad("La cantidad no puede ser 0");
         return; 
       }
@@ -34,51 +52,61 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
     setErrorCantidad(null);
 
     const productosFormateados = productosSeleccionados.map((p) => {
-      const producto = productos.find((prod) => prod.id == p.id);
+      const producto = productos.find((prod : Producto) => prod.id == Number(p.id));
+      console.log("PRODUCTOOOOO", producto)
+      if (!producto) {
+        throw new Error(`Producto con ID ${p.id} no encontrado`);
+      }
+      
       const precio = p.tipoVenta === "mayorista" ? producto.mayorista : producto.minorista;
+      const cantidad = Number(p.cantidad); 
+  
       return {
         nombre: obtenerNombreProducto(producto),
-        cantidad: p.cantidad,
-        subtotal: precio * p.cantidad,
+        cantidad: cantidad,
+        subtotal: precio * cantidad,
         imei: p.imei || "",
-        descripcion: p.color ? `${p.capacidad} - ${p.color}` : "",
+        descripcion: producto.color ? `${producto.capacidad} - ${producto.color}` : "",
       };
     });
-
+  
     const total = calcularTotal();
-
+  
     try {
+      console.log("PRODUCTOS FORMATEADOS",productosFormateados)
       await createVenta({
         fecha_venta,
         cliente,
         productos: productosFormateados,
         total,
       });
-
+  
       for (const p of productosSeleccionados) {
-        const producto = productos.find((prod) => prod.id === Number(p.id));
+        const producto = productos.find((prod : any) => prod.id === Number(p.id));
         if (producto) {
-          const nuevoStock = producto.stock - p.cantidad;
-
+          const cantidad = Number(p.cantidad);
+          const nuevoStock = producto.stock - cantidad;
+  
           if (nuevoStock <= 0) {
-            await deleteProducto(p.id);
+            await deleteProducto(Number(p.id));
           } else {
-            await updateStockProducto(p.id, nuevoStock);
+            await updateStockProducto(Number(p.id), nuevoStock);
           }
         }
       }
-
+  
       toast({
         title: "Venta registrada",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-
+  
       setProductosSeleccionados([]);
+      setCliente("")
       setFecha(new Date().toISOString().split("T")[0]);
-      fetchProductos();
-      fetchVentas();
+      await fetchProductos();
+      await fetchVentas();
       onClose();
     } catch (error) {
       toast({
@@ -89,27 +117,28 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
       });
     }
   };
+  
 
-  const eliminarProducto = (index) => {
+  const eliminarProducto = (index : number) => {
     setProductosSeleccionados(productosSeleccionados.filter((_, i) => i !== index));
   };
 
   const calcularTotal = () => {
     return productosSeleccionados.reduce((total, prod) => {
-      const producto = productos.find((p) => p.id == prod.id);
+      const producto = productos.find((p : Producto) => p.id == Number(prod.id));
       if (!producto) return total;
       const precio = prod.tipoVenta === "mayorista" ? producto.mayorista : producto.minorista;
       const cantidad = prod.cantidad || 1;
-      return total + precio * cantidad;
+      return total + precio * Number(cantidad);
     }, 0);
   };
 
-  const obtenerNombreProducto = (producto) => {
+  const obtenerNombreProducto = (producto : Producto) => {
     if (producto.categoria === 3) {
       return producto.nombre || "Accesorio sin nombre";
     }
     if (producto.modeloId) {
-      const modelo = modelos.find((m) => m.id === producto.modeloId);
+      const modelo = modelos.find((m : Modelo) => m.id == producto.modeloId);
       return modelo
         ? `${modelo.nombre}`
         : "Modelo no encontrado";
@@ -117,7 +146,8 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
     return "Producto sin datos";
   };
 
-  const getStockProducto = (productoId) => {
+  const getStockProducto = (productoId : number) => {
+    console.log("producto id acaaaaa",productoId)
     const producto = productos.find((p) => p.id === Number(productoId));
     return producto ? producto.stock : 1;
   };
@@ -171,25 +201,25 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
                     value={prod.id}
                     onChange={(e) => actualizarProducto(index, "id", e.target.value)}
                   >
-                    {productos.map((producto) => (
+                    {productos.map((producto : any) => (
                       <option key={producto.id} value={producto.id}>
                         {obtenerNombreProducto(producto)} {producto.capacidad} {producto.color} - Stock: {producto.stock}
                       </option>
                     ))}
                   </Select>
                 </FormControl>
-                <FormControl isInvalid={prod.cantidad > prod.stock}>
+                <FormControl>
                   <FormLabel>Cantidad</FormLabel>
                   <Input
                     type="number"
                     value={prod.cantidad}
                     onChange={(e) => {
-                      const value = parseInt(e.target.value, 10);
+                      const value =e.target.value;
                       setErrorCantidad(null)
                       actualizarProducto(index, "cantidad", value);
                     }}
                   />
-                  {prod.cantidad > getStockProducto(prod.id) && (
+                  {Number(prod.cantidad) > getStockProducto(Number(prod.id)) && (
                     <Text fontSize="sm" color="red.500" mt={1}>
                       No hay ese stock disponible
                     </Text>
@@ -219,7 +249,7 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
                     value={prod.imei}
                     onChange={(e) => actualizarProducto(index, "imei", e.target.value)}
                     isDisabled={(() => {
-                      const p = productos.find((p) => p.id == prod.id);
+                      const p = productos.find((p: Producto) => p.id == Number(prod.id));
                       return p?.categoria === 3;
                     })()}
                   />
@@ -236,8 +266,8 @@ const NewVenta = ({ fetchProductos, fetchVentas, modelos, productos, isOpen, onC
               isDisabled={
                 productosSeleccionados.length === 0 ||
                 productosSeleccionados.some((p) => p.id === "") ||
-                productosSeleccionados.some(p => p.cantidad > getStockProducto(p.id)) ||
-                errorCantidad
+                productosSeleccionados.some((p : ProductoSeleccionado) => Number(p.cantidad) > getStockProducto(Number(p.id))) ||
+                errorCantidad !== ""
               }
               onClick={guardarVenta}
               colorScheme={"green"}

@@ -3,53 +3,19 @@ import Dashboard from './Dashboard';
 import supabase from './supabase/supabase.service';
 import Login from './components/Login';
 import { ChakraProvider } from '@chakra-ui/react';
+import './App.css';
+import { Modelo, Producto, Venta } from './types';
+import { fetchModelos, fetchProductos, fetchVentas } from './services/fetchData';
 
 function App() {
-  const [session, setSession] = useState(null);
-  const [productos, setProductos] = useState([]);
-  const [modelos, setModelos] = useState([]);
-  const [ventas, setVentas] = useState([]);
+  const [session, setSession] = useState<any>(null);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [modelos, setModelos] = useState<Modelo[]>([]);
+  const [ventas, setVentas] = useState<Venta[]>([]);
 
-  async function fetchProductos() {
-    const { data, error } = await supabase.from('productos').select('*').order('id', { ascending: true });;
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-    }
-
-    setProductos(data || []);
-  }
-
-  async function fetchModelos() {
-    const { data, error } = await supabase.from('Modelo_celular').select('*');
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-    }
-    setModelos(data || []);
-  }
-
-  async function fetchVentas() {
-    const { data, error } = await supabase.from('Ventas').select('*').order('id', { ascending: true });;
-
-    if (error) {
-      if (error.message === "JWT expired") {
-        await supabase.auth.signOut();
-        return;
-      }
-    }
-
-    setVentas(data || []);
-  }
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((session) => {
       setSession(session);
     });
 
@@ -59,46 +25,60 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const fetchInitialData = async () => {
+      const productosData = await fetchProductos();
+      const modelosData = await fetchModelos();
+      const ventasData = await fetchVentas();
+  
+      setProductos(productosData);
+      setModelos(modelosData);
+      setVentas(ventasData);
+    };
+  
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
     const productosChannel = supabase
       .channel('productos')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, (payload) => {
-        fetchProductos();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, async () => {
+        const productosData = await fetchProductos();
+        setProductos(productosData);
       })
       .subscribe();
-
+  
     const modelosChannel = supabase
       .channel('modelos')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Modelo_celular' }, (payload) => {
-        fetchModelos();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Modelo_celular' }, async () => {
+        const modelosData = await fetchModelos();
+        setModelos(modelosData); // <-- y acá
       })
       .subscribe();
-
+  
     const ventasChannel = supabase
       .channel('ventas')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Ventas' }, (payload) => {
-        fetchVentas();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Ventas' }, async () => {
+        const ventasData = await fetchVentas();
+        setVentas(ventasData); // <-- y acá
       })
       .subscribe();
-
+  
     return () => {
-      supabase.removeChannel(productosChannel);
-      supabase.removeChannel(modelosChannel);
-      supabase.removeChannel(ventasChannel);
+      productosChannel.unsubscribe();
+      modelosChannel.unsubscribe();
+      ventasChannel.unsubscribe();
     };
-  }, []);
+  }, []);  
 
   return (
     <ChakraProvider>
 
       {session ? (
-        <Dashboard
-          productos={productos}
-          fetchProductos={fetchProductos}
-          ventas={ventas}
-          fetchVentas={fetchVentas}
-          modelos={modelos}
-          fetchModelos={fetchModelos}
-        />
+       <Dashboard 
+       productos={productos}
+       modelos={modelos}
+       ventas={ventas}
+     />
       ) : (
         <Login onLogin={setSession} />
       )}

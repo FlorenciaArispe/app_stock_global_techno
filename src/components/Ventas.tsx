@@ -14,13 +14,21 @@ import { CardMobileVentas } from "./CardMobileVentas";
 import NewVenta from "./NewVenta";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { deleteVenta } from "../supabase/ventas.service";
+import { Modelo, Producto, Venta } from "../types";
+import { fetchVentas } from "../services/fetchData";
 
-const Ventas = ({ productos, modelos, ventas, fetchVentas, fetchProductos }: any) => {
+interface VentasProps {
+  productos: Producto[];
+  modelos: Modelo[];
+  ventas: Venta[];
+}
+
+const Ventas = ({ productos, modelos, ventas }: VentasProps) => {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("");
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedVentaId, setSelectedVentaId] = useState();
+  const [selectedVentaId, setSelectedVentaId] = useState<number>();
   const [mostrarBuscador, setMostrarBuscador] = useState(false);
   const {
     isOpen: isOpenNewVenta,
@@ -32,16 +40,18 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas, fetchProductos }: any
     { fallback: "base" }
   );
 
+  console.log(ventas)
+
   const onDelete = async () => {
     try {
-      await deleteVenta(selectedVentaId);
+      await deleteVenta(Number(selectedVentaId));
       toast({
         title: "Venta eliminada",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      fetchVentas();
+      await fetchVentas();
     } catch (error) {
       toast({
         title: "Error al eliminar",
@@ -52,19 +62,20 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas, fetchProductos }: any
       });
     }
   };
-  const ventasFiltradas = ventas.filter((venta) => {
+  const ventasFiltradas = ventas.filter((venta : Venta) => {
     const coincideNombre = filtroNombre
       ? venta.productos.some((p) =>
         p.nombre.toLowerCase().includes(filtroNombre.toLowerCase())
       )
       : true;
-    const coincideFecha = filtroFecha
-      ? venta.fecha_venta === filtroFecha
-      : true;
+      const coincideFecha = filtroFecha
+  ? venta.fecha_venta.slice(0, 10) === filtroFecha
+  : true;
+    
     return coincideNombre && coincideFecha;
   });
 
-  const handleDeleteConfirm = (id) => {
+  const handleDeleteConfirm = () => {
     onDelete()
   }
 
@@ -84,8 +95,6 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas, fetchProductos }: any
       </Flex>
 
       <NewVenta
-        fetchProductos={fetchProductos}
-        fetchVentas={fetchVentas}
         modelos={modelos}
         productos={productos}
         isOpen={isOpenNewVenta}
@@ -158,7 +167,7 @@ const Ventas = ({ productos, modelos, ventas, fetchVentas, fetchProductos }: any
                       >
                         {venta.productos.map((p, i) => (
                           <Box key={i} mb={{ base: 2, md: 0 }}>
-                            <Text>{`${p.nombre} x ${p.cantidad} ($${p.subtotal})`}</Text>
+                            <Text>{`${p.nombre} ${p.descripcion ?? ""} x ${p.cantidad} ($${p.subtotal})`}</Text>
                             {p.imei && (
                               <Text fontSize="sm" color="gray.500" ml={{ base: 2, md: 0 }} mt={{ base: 0, md: 1 }}>
                                 IMEI: {p.imei}
