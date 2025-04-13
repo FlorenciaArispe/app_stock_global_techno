@@ -19,19 +19,29 @@ import {
 } from "@chakra-ui/react";
 import { createProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
+import { categorias } from "../data";
+import { Modelo, Producto } from "../types";
+import { fetchModelos, fetchProductos } from "../services/fetchData";
 
-function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProductos, fetchModelos }: any) {
+interface NewProductProps {
+  isOpen: boolean;
+  onClose: () => void;
+  productos: Producto[];
+  modelos: Modelo[];
+}
+
+function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const [step, setStep] = useState(1);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
-  const [modelo, setModelo] = useState();
+  const [modelo, setModelo] = useState<any>();
   const [modeloOtro, setModeloOtro] = useState("");
   const [modeloError, setModeloError] = useState("");
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState();
-  const [valorNeto, setValorNeto] = useState();
-  const [mayorista, setMayorista] = useState();
-  const [minorista, setMinorista] = useState();
+  const [stock, setStock] = useState<number>();
+  const [valorNeto, setValorNeto] = useState<number>();
+  const [mayorista, setMayorista] = useState<number>();
+  const [minorista, setMinorista] = useState<number>();
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const toast = useToast();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -118,7 +128,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
     }
 
     try {
-      await createProducto(stock, categoriaId, valorNeto, mayorista, minorista, capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+      await createProducto(stock ?? 0, categoriaId ?? 0, valorNeto ?? 0, mayorista ?? 0, minorista ?? 0, capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
       await fetchProductos()
       onClose();
       await fetchModelos()
@@ -215,7 +225,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                       }
                     }}
                   >
-                    {modelos.map((m) => (
+                    {modelos.map((m : any) => (
                       <option key={m.id} value={m.nombre}>
                         {m.nombre}
                       </option>
@@ -312,7 +322,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                 <FormControl isInvalid={!!errors.stock}>
                   <FormLabel>Stock</FormLabel>
                   <Input type="number" value={stock} onChange={(e) => {
-                    setStock(e.target.value)
+                    setStock(Number(e.target.value));
                     setErrors((prev) => ({ ...prev, stock: "" }));
                   }} />
                   {errors.stock && (
@@ -324,7 +334,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                 <FormControl isInvalid={!!errors.valorNeto}>
                   <FormLabel>Valor Neto</FormLabel>
                   <Input type="number" value={valorNeto} onChange={(e) => {
-                    setValorNeto(e.target.value)
+                    setValorNeto(Number(e.target.value));
                     setErrors((prev) => ({ ...prev, valorNeto: "" }));
                   }} />
                   {errors.valorNeto && (
@@ -338,7 +348,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                 <FormControl isInvalid={!!errors.minorista}>
                   <FormLabel>Precio Minorista</FormLabel>
                   <Input type="number" value={minorista} onChange={(e) => {
-                    setMinorista(e.target.value)
+                    setMinorista(Number(e.target.value));
                     setErrors((prev) => ({ ...prev, minorista: "" }));
                   }} />
                   {errors.minorista && (
@@ -350,7 +360,7 @@ function NewProduct({ isOpen, onClose, categorias, productos, modelos, fetchProd
                 <FormControl isInvalid={!!errors.mayorista}>
                   <FormLabel>Precio Mayorista</FormLabel>
                   <Input type="number" value={mayorista} onChange={(e) => {
-                    setMayorista(e.target.value)
+                    setMayorista(Number(e.target.value));
                     setErrors((prev) => ({ ...prev, mayorista: "" }));
                   }} />
                   {errors.mayorista && (

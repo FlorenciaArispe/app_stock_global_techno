@@ -70,7 +70,7 @@ async function updateProducto(id: number, data: any) {
   }
 }
 
-async function updateStockProducto(id, nuevoStock) {
+async function updateStockProducto(id: number, nuevoStock: number) {
   const { error } = await supabase
     .from('productos')
     .update({ stock: nuevoStock })

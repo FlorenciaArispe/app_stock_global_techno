@@ -40,8 +40,23 @@ import { deleteProducto, updateStockProducto } from "../supabase/productos.servi
 import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
 import { CardMobileCelular } from "./CardMobileCelular";
 import { CardMobileAccesorio } from "./CardMobileAccesorio";
+import { Modelo, Producto } from "../types";
+import NewVenta from "./NewVenta";
+import { fetchProductos } from "../services/fetchData";
+import RegistrarVentaEnProductos from "./RegistrarVentaEnProductos";
 
-function Productos({ productos, categorias, modelos, onDelete, fetchProductos, fetchModelos }: any) {
+interface ProductosProps {
+  productos: Producto[];
+  modelos: Modelo[];
+  onDelete:(id: number) => Promise<void>;
+}
+
+interface ProductoModificar {
+  id: number;
+  stockNuevo: number;
+}
+
+function Productos({ productos, modelos, onDelete}: ProductosProps) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
   const [filaExpandida, setFilaExpandida] = useState<number | null>(null);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -54,17 +69,18 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
   } = useDisclosure();
   const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
   const { isOpen: isVentaOpen, onOpen: onVentaOpen, onClose: onVentaClose } = useDisclosure();
-  const [productoModificar, setProductoModificar] = useState<{ id: number, stockNuevo: number } | null>(null);
-  const [selectedProductId, setSelectedProductId] = useState(null);
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [productoModificar, setProductoModificar] = useState<ProductoModificar | null>(null);
+  const [productoNewVenta ,setProductoNewVenta]= useState<Producto | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const isMobile = useBreakpointValue(
     { base: true, xl: false },
     { fallback: "base" }
   );
   const isMobile2 = useBreakpointValue({ base: true, sm: false }, { fallback: "base" });
   const cancelRef = useRef(null);
-  const [productoAEliminar, setProductoAEliminar] = useState(null);
-  const [accesorioAEliminar, setAccesorioAEliminar] = useState(null);
+  const [productoAEliminar, setProductoAEliminar] = useState<Producto | null>(null);
+  const [accesorioAEliminar, setAccesorioAEliminar] = useState<Producto | null>(null);
   const [mostrarBuscadorMobile, setMostrarBuscadorMobile] = useState(false);
   const [mostrarBuscadorAccesoriosMobile, setMostrarBuscadorAccesoriosMobile] = useState(false);
   const [busquedaCelulares, setBusquedaCelulares] = useState("");
@@ -98,7 +114,9 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
   };
 
   const handleDeleteConfirm = () => {
-    onDelete(selectedProductId)
+    if (selectedProductId !== null) {
+      onDelete(selectedProductId);
+    }
   }
 
   function handleEditarProducto(producto: any) {
@@ -106,15 +124,16 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
     setIsModalUpdateOpen(true);
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id : number) => {
     await deleteProducto(id);
     await fetchProductos();
     closeConfirmDialog()
   }
 
-  const actualizarStock = async (producto, stockNuevo) => {
+  const actualizarStock = async (producto: Producto, stockNuevo: number) => {
     const id = producto.id;
     setProductoModificar({ id, stockNuevo });
+    setProductoNewVenta(producto)
 
     if (producto.categoria == 3) {
       setProductoAEliminar(null)
@@ -539,6 +558,15 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         )}
       </Flex>
 
+      {isVentaOpen && productoNewVenta &&  (
+        <RegistrarVentaEnProductos 
+        isOpen={isVentaOpen}
+        onClose={onVentaClose}
+        stockNuevo={productoModificar?.stockNuevo}
+        productoNewVenta={productoNewVenta}
+        />
+      )}
+
       {isModalUpdateOpen && (
         <EditProduct
           isOpen={isModalUpdateOpen}
@@ -547,11 +575,9 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
             setProductoSeleccionado(null);
           }}
           producto={productoSeleccionado}
-          categorias={categorias}
           modelos={modelos}
           productos={productos}
           fetchProductos={fetchProductos}
-          fetchModelos={fetchModelos}
         />
       )}
 
@@ -559,11 +585,8 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
         <NewProduct
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          categorias={categorias}
           productos={productos}
           modelos={modelos}
-          fetchProductos={fetchProductos}
-          fetchModelos={fetchModelos}
         />
       )}
 
@@ -579,7 +602,7 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 {productoAEliminar ? `${obtenerNombreModelo(productoAEliminar.modeloId)} ${productoAEliminar.capacidad} ${productoAEliminar.color}` :
-                  accesorioAEliminar.nombre
+                  accesorioAEliminar?.nombre
                 }
               </AlertDialogHeader>
               <AlertDialogBody>
@@ -591,7 +614,12 @@ function Productos({ productos, categorias, modelos, onDelete, fetchProductos, f
                 </Button>
                 <Button
                   colorScheme="red"
-                  onClick={() => handleDelete(productoAEliminar ? productoAEliminar.id : accesorioAEliminar.id)}
+                  onClick={() => {
+                    const id = productoAEliminar ? productoAEliminar.id : accesorioAEliminar?.id;
+                    if (id !== undefined) {
+                      handleDelete(id);
+                    }
+                  }}
                   ml={3}
                 >
                   Aceptar

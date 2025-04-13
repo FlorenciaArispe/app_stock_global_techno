@@ -6,18 +6,20 @@ import {
 } from "@chakra-ui/react";
 import { updateProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
+import { categorias } from "../data";
+import { fetchModelos } from "../services/fetchData";
 
-function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos, fetchProductos, fetchModelos, }: any) {
+function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProductos }: any) {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [modelo, setModelo] = useState<any>();
   const [modeloOtro, setModeloOtro] = useState("");
   const [modeloError, setModeloError] = useState("");
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState();
-  const [valorNeto, setValorNeto] = useState();
-  const [mayorista, setMayorista] = useState();
-  const [minorista, setMinorista] = useState();
+  const [stock, setStock] = useState<number>();
+  const [valorNeto, setValorNeto] = useState<number>();
+  const [mayorista, setMayorista] = useState<number>();
+  const [minorista, setMinorista] = useState<number>();
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const toast = useToast();
@@ -91,7 +93,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
     }
 
     const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
+
     const duplicado = productos.find((p: any) => {
       if (p.id === producto.id) return false;
       if (categoriaSeleccionada === "Accesorio") {
@@ -251,7 +253,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
               <FormLabel>Stock</FormLabel>
               <Input type="number" value={stock}
                 onChange={(e) => {
-                  setStock(e.target.value)
+                  setStock(Number(e.target.value));
                   setErrors((prev) => ({ ...prev, stock: "" }));
 
                 }}
@@ -266,7 +268,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
               <FormLabel>Valor Neto</FormLabel>
               <Input type="number" value={valorNeto}
                 onChange={(e) => {
-                  setValorNeto(e.target.value)
+                  setValorNeto(Number(e.target.value));
                   setErrors((prev) => ({ ...prev, valorNeto: "" }));
                 }} />
               {errors.valorNeto && (
@@ -280,7 +282,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
             <FormControl mb={3} isInvalid={!!errors.mayorista}>
               <FormLabel>Precio Mayorista</FormLabel>
               <Input type="number" value={mayorista} onChange={(e) => {
-                setMayorista(e.target.value)
+                setMayorista(Number(e.target.value));
                 setErrors((prev) => ({ ...prev, mayorista: "" }));
               }} />
               {errors.mayorista && (
@@ -292,7 +294,7 @@ function EditProduct({ isOpen, onClose, producto, categorias, modelos, productos
             <FormControl mb={3} isInvalid={!!errors.minorista}>
               <FormLabel>Precio Minorista</FormLabel>
               <Input type="number" value={minorista} onChange={(e) => {
-                setMinorista(e.target.value)
+                setMinorista(Number(e.target.value));
                 setErrors((prev) => ({ ...prev, minorista: "" }));
               }} />
               {errors.minorista && (

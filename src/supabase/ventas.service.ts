@@ -17,34 +17,47 @@ export type ProductoVenta = {
   tipoVenta: string;
 };
 
-export async function getVentas(): Promise<Venta[] | null> {
-  const { data, error } = await supabase
-    .from("Ventas")
-    .select("*")
-    .order("id", { ascending: true });
+export async function getVentas() {
+  const { data, error } = await supabase.from("Ventas").select();
   if (error) {
-    return null;
+    if (error.message === "JWT expired") {
+      await supabase.auth.signOut();
+      return;
+    }
+    throw error;
   }
   return data;
 }
 
-export async function createVenta(venta: Venta): Promise<void> {
-  const { error } = await supabase.from("Ventas").insert([venta]);
+export async function createVenta(ventaData: any) {
+  const { error } = await supabase.from("Ventas").insert(ventaData);
   if (error) {
+    if (error.message === "JWT expired") {
+      await supabase.auth.signOut();
+      return;
+    }
     throw error;
   }
 }
 
-export async function updateVenta(id: number, venta: Partial<Venta>): Promise<void> {
-  const { error } = await supabase.from("Ventas").update(venta).eq("id", id);
-  if (error) {
-    throw error;
-  }
-}
-
-export async function deleteVenta(id: number): Promise<void> {
+export async function deleteVenta(id: number) {
   const { error } = await supabase.from("Ventas").delete().eq("id", id);
   if (error) {
+    if (error.message === "JWT expired") {
+      await supabase.auth.signOut();
+      return;
+    }
+    throw error;
+  }
+}
+
+export async function updateVenta(id: number, data: any) {
+  const { error } = await supabase.from("Ventas").update(data).eq("id", id);
+  if (error) {
+    if (error.message === "JWT expired") {
+      await supabase.auth.signOut();
+      return;
+    }
     throw error;
   }
 }

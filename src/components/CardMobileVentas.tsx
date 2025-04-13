@@ -1,6 +1,14 @@
 import { Box, Text, Flex, Divider, IconButton } from "@chakra-ui/react";
 import { MdDelete } from "react-icons/md";
 
+type ProductoVenta = {
+  nombre: string;
+  cantidad: number;
+  subtotal: number;
+  imei?: string;
+  descripcion?: string;
+};
+
 export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => {
   return (
     <Box
@@ -53,9 +61,9 @@ export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => 
           flexWrap="wrap"
           gap={4}
         >
-          {venta.productos.map((p, i) => (
+         {venta.productos.map((p: ProductoVenta, i: number) => (
             <Box key={i} mb={{ base: 2, md: 0 }}>
-              <Text>{`${p.nombre} x ${p.cantidad} ($${p.subtotal})`}</Text>
+              <Text>{`${p.nombre} ${p.descripcion ?? ""} x ${p.cantidad} ($${p.subtotal})`}</Text>
               {p.imei && (
                 <Text fontSize="sm" color="gray.500" ml={2}>
                   IMEI: {p.imei}
