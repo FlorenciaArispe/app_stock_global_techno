@@ -16,7 +16,6 @@ import {
   IconButton,
   ButtonGroup,
   useDisclosure,
-  Tooltip,
   useBreakpointValue,
   Input,
   AlertDialogOverlay,
@@ -250,8 +249,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                           </Flex>
                         </Td>
                         <Td textAlign={"center"}>
-                          <Flex justifyContent={"center"} gap={2}>
-                            <Tooltip label={"Editar"}>
+                          <Flex justifyContent={"center"} gap={2}>                       
                               <IconButton
                                 icon={<MdEdit />}
                                 aria-label="Editar"
@@ -259,9 +257,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 color="blue.500"
                                 variant="ghost"
                                 onClick={() => handleEditarProducto(producto)}
-                              />
-                            </Tooltip>
-                            <Tooltip label={"Eliminar"}>
+                              />                           
                               <IconButton
                                 icon={<MdDelete />}
                                 onClick={() => {
@@ -272,9 +268,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 size="sm"
                                 color="red.500"
                                 variant="ghost"
-                              />
-                            </Tooltip>
-                            <Tooltip label={"Precios"}>
+                              />                        
                               <IconButton
                                 icon={
                                   filaExpandida === producto.id ? (
@@ -289,7 +283,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 variant="ghost"
                                 onClick={() => toggleExpandirFila(producto.id)}
                               />
-                            </Tooltip>
                           </Flex>
                         </Td>
                       </Tr>
@@ -441,7 +434,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                         </Td>
                         <Td textAlign={"center"}>
                           <Flex justifyContent={"center"} gap={2}>
-                            <Tooltip label={"Editar"}>
                               <IconButton
                                 icon={<MdEdit />}
                                 aria-label="Editar"
@@ -450,8 +442,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 variant="ghost"
                                 onClick={() => handleEditarProducto(accesorio)}
                               />
-                            </Tooltip>
-                            <Tooltip label={"Eliminar"}>
                               <IconButton
                                 icon={<MdDelete />}
                                 onClick={() => {
@@ -463,8 +453,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 color="red.500"
                                 variant="ghost"
                               />
-                            </Tooltip>
-                            <Tooltip label={"Precios"}>
                               <IconButton
                                 icon={
                                   filaExpandida === accesorio.id ? (
@@ -479,7 +467,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                                 variant="ghost"
                                 onClick={() => toggleExpandirFila(accesorio.id)}
                               />
-                            </Tooltip>
                           </Flex>
                         </Td>
                       </Tr>
