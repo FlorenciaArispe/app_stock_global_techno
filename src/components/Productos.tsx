@@ -512,7 +512,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
               isMobile && mostrarBuscadorAccesoriosMobile ? "column" : "row"
             } gap={2} mb={2}>
               <Flex justify="flex-start" align="center">
-                <Text fontSize="20px" fontWeight="bold">
+                <Text fontSize={{ base: "18", md: "20px" }} fontWeight="bold">
                   Accesorios
                 </Text>
                 {isMobile2 && (

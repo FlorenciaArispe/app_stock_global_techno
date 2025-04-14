@@ -38,10 +38,10 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const [modeloError, setModeloError] = useState("");
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState<number>();
-  const [valorNeto, setValorNeto] = useState<number>();
-  const [mayorista, setMayorista] = useState<number>();
-  const [minorista, setMinorista] = useState<number>();
+  const [stock, setStock] = useState<string>("");
+  const [valorNeto, setValorNeto] = useState<string>("");
+  const [mayorista, setMayorista] = useState<string>("");
+  const [minorista, setMinorista] = useState<string>("");
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const toast = useToast();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -83,7 +83,6 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
       }
     }
     if (!stock) validationErrors.stock = "El stock es obligatorio.";
-    if (!valorNeto) validationErrors.valorNeto = "El valor neto es obligatorio.";
     if (!mayorista) validationErrors.mayorista = "El valor mayorista es obligatorio.";
     if (!minorista) validationErrors.minorista = "El valor minorista es obligatorio.";
     if (Object.keys(validationErrors).length > 0) {
@@ -128,7 +127,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
     }
 
     try {
-      await createProducto(stock ?? 0, categoriaId ?? 0, valorNeto ?? 0, mayorista ?? 0, minorista ?? 0, capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+      const neto=  valorNeto ? Number(valorNeto) : 0;
+      await createProducto(Number(stock), categoriaId ?? 1, neto , Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
       await fetchProductos()
       onClose();
       await fetchModelos()
@@ -260,7 +260,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isInvalid={!!errors.color}>
-                  <FormLabel>Color</FormLabel>
+                  <FormLabel>Color {categoriaSeleccionada === "Celular Usado" && "y Batería"}</FormLabel>
                   <Input
                     value={color}
                     onChange={(e) => {
@@ -327,7 +327,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                 <FormControl isInvalid={!!errors.stock}>
                   <FormLabel>Stock</FormLabel>
                   <Input type="number" value={stock} onChange={(e) => {
-                    setStock(Number(e.target.value));
+                    setStock(e.target.value);
                     setErrors((prev) => ({ ...prev, stock: "" }));
                   }} />
                   {errors.stock && (
@@ -336,24 +336,19 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                     </Text>
                   )}
                 </FormControl>
-                <FormControl isInvalid={!!errors.valorNeto}>
+                <FormControl>
                   <FormLabel>Valor Neto</FormLabel>
                   <Input type="number" value={valorNeto} onChange={(e) => {
-                    setValorNeto(Number(e.target.value));
-                    setErrors((prev) => ({ ...prev, valorNeto: "" }));
+                    setValorNeto(e.target.value);
+                  
                   }} />
-                  {errors.valorNeto && (
-                    <Text color="red.500" fontSize="sm">
-                      {errors.valorNeto}
-                    </Text>
-                  )}
                 </FormControl>
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isInvalid={!!errors.minorista}>
                   <FormLabel>Precio Minorista</FormLabel>
                   <Input type="number" value={minorista} onChange={(e) => {
-                    setMinorista(Number(e.target.value));
+                    setMinorista(e.target.value);
                     setErrors((prev) => ({ ...prev, minorista: "" }));
                   }} />
                   {errors.minorista && (
@@ -365,7 +360,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                 <FormControl isInvalid={!!errors.mayorista}>
                   <FormLabel>Precio Mayorista</FormLabel>
                   <Input type="number" value={mayorista} onChange={(e) => {
-                    setMayorista(Number(e.target.value));
+                    setMayorista(e.target.value);
                     setErrors((prev) => ({ ...prev, mayorista: "" }));
                   }} />
                   {errors.mayorista && (
