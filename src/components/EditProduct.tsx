@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import { updateProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
-import { categorias } from "../data";
+import { Capacidad, capacidades, categorias } from "../data";
 import { fetchModelos } from "../services/fetchData";
 
 function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProductos }: any) {
@@ -221,8 +221,11 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                     }
                   }}
                 >
-                  <option value="128GB">128GB</option>
-                  <option value="256GB">256GB</option>
+                 {capacidades.map((opcion : Capacidad) => (
+      <option key={opcion.id} value={opcion.nombre}>
+        {opcion.nombre}
+      </option>
+    ))}
                 </Select>
                 {errors.capacidad && (
                   <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
