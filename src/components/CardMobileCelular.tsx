@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, actualizarStock }: any) => {
+export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, disminuirStock , aumentarStock }: any) => {
   return (
     <Box
       w={"100%"}
@@ -32,14 +32,14 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
               icon={<MinusIcon />}
               aria-label="Disminuir stock"
               size="xs"
-              onClick={() => actualizarStock(producto, producto.stock - 1)}
+              onClick={() => disminuirStock(producto, producto.stock - 1)}
             />
             <Text minW="20px" fontSize={"17px"} textAlign="center">{producto.stock}</Text>
             <IconButton
               icon={<AddIcon />}
               aria-label="Aumentar stock"
               size="xs"
-              onClick={() => actualizarStock(producto, producto.stock + 1)}
+              onClick={() => aumentarStock(producto, producto.stock + 1)}
             />
           </Flex>
         </Flex>

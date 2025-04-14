@@ -36,8 +36,13 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
   };
 
   const actualizarProducto = (index: number, key: keyof ProductoSeleccionado, value: string) => {
+    // if(key === "cantidad"){
+    //   setErrorCantidad(null)
+    // }
+    console.log(value, index, key)
     const nuevosProductos = [...productosSeleccionados];
     nuevosProductos[index][key] = value;
+    console.log("nuevo producto", nuevosProductos)
     setProductosSeleccionados(nuevosProductos);
   };
 
@@ -147,8 +152,7 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
   };
 
   const getStockProducto = (productoId : number) => {
-    console.log("producto id acaaaaa",productoId)
-    const producto = productos.find((p) => p.id === Number(productoId));
+    const producto = productos.find((p) => p.id == Number(productoId));
     return producto ? producto.stock : 1;
   };
 
@@ -164,11 +168,11 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
         <ModalBody>
           <Flex flexDirection={"row"} gap={{ base: 2, md: 6 }}>
             <FormControl mb={4}>
-              <FormLabel>Fecha de Venta</FormLabel>
+              <FormLabel fontWeight={600}>Fecha de Venta</FormLabel>
               <Input type="date" value={fecha_venta} onChange={(e) => setFecha(e.target.value)} />
             </FormControl>
             <FormControl mb={4}>
-              <FormLabel>Cliente</FormLabel>
+              <FormLabel fontWeight={600}>Cliente</FormLabel>
               <Input type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} />
             </FormControl>
           </Flex>
@@ -209,7 +213,7 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Cantidad</FormLabel>
+                  <FormLabel fontWeight={600}>Cantidad</FormLabel>
                   <Input
                     type="number"
                     value={prod.cantidad}
@@ -231,7 +235,7 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
                   )}
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Tipo de Venta</FormLabel>
+                  <FormLabel fontWeight={600}>Tipo de Venta</FormLabel>
                   <RadioGroup
                     value={prod.tipoVenta}
                     onChange={(value) => actualizarProducto(index, "tipoVenta", value)}
@@ -243,7 +247,7 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
                   </RadioGroup>
                 </FormControl>
                 <FormControl>
-                  <FormLabel>IMEI</FormLabel>
+                  <FormLabel fontWeight={600}>IMEI</FormLabel>
                   <Input
                     placeholder="IMEI"
                     value={prod.imei}
@@ -266,8 +270,8 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
               isDisabled={
                 productosSeleccionados.length === 0 ||
                 productosSeleccionados.some((p) => p.id === "") ||
-                productosSeleccionados.some((p : ProductoSeleccionado) => Number(p.cantidad) > getStockProducto(Number(p.id))) ||
-                errorCantidad !== ""
+                 productosSeleccionados.some((p : ProductoSeleccionado) => Number(p.cantidad) > getStockProducto(Number(p.id))) ||
+                 Boolean(errorCantidad)
               }
               onClick={guardarVenta}
               colorScheme={"green"}

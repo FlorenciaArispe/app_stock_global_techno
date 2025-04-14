@@ -151,9 +151,12 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={onClose}size={{ base: "full", md: "xl" }}>
+    <ModalOverlay />
+    <ModalContent
+      mt={{ base: '0', md: '5', lg: '20' }}
+      borderTopRadius={{ base: '0', md: 'md' }}
+    >
         <ModalHeader>Editar Producto</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -232,15 +235,23 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
           {categoriaSeleccionada === "Accesorio" && (
             <FormControl mb={3} isInvalid={!!errors.nombreAccesorio}>
               <FormLabel>Nombre Accesorio</FormLabel>
-              <Input value={nombreAccesorio}
+              <Input
+                value={nombreAccesorio}
                 onChange={(e) => {
-                  setNombreAccesorio(e.target.value)
+                  const input = e.target.value;
+                  const capitalizado = input
+                    ? input.charAt(0).toUpperCase() + input.slice(1)
+                    : "";
+
+                  setNombreAccesorio(capitalizado);
                   setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
+
                   if (errors.general) {
                     setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                   }
                 }}
               />
+
               {errors.nombreAccesorio && (
                 <Text color="red.500" fontSize="sm">
                   {errors.nombreAccesorio}
@@ -248,7 +259,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
               )}
             </FormControl>
           )}
-          <Flex gap={2}>
+          <Flex gap={2} mt={3}>
             <FormControl mb={3} isInvalid={!!errors.stock}>
               <FormLabel>Stock</FormLabel>
               <Input type="number" value={stock}

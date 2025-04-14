@@ -304,9 +304,14 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
               {categoriaSeleccionada === "Accesorio" && (
                 <FormControl isInvalid={!!errors.nombreAccesorio} mb={4}>
                   <FormLabel>Nombre del Accesorio</FormLabel>
-                  <Input value={nombreAccesorio} onChange={(e) => {
-                    setNombreAccesorio(e.target.value)
+                  <Input placeholder="Nombre" value={nombreAccesorio} 
+                   onChange={(e) => {
+                    const input = e.target.value;
+                    const capitalizado = input.charAt(0).toUpperCase() + input.slice(1);
+                
+                    setNombreAccesorio(capitalizado);
                     setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
+                
                     if (errors.general) {
                       setErrors(prevErrors => ({ ...prevErrors, general: '' }));
                     }

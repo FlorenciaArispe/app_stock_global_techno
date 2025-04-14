@@ -13,7 +13,6 @@ function App() {
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [ventas, setVentas] = useState<Venta[]>([]);
 
-
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((session) => {
       setSession(session);
@@ -72,7 +71,6 @@ function App() {
 
   return (
     <ChakraProvider>
-
       {session ? (
        <Dashboard 
        productos={productos}
