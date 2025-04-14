@@ -46,7 +46,7 @@ import RegistrarVentaEnProductos from "./RegistrarVentaEnProductos";
 interface ProductosProps {
   productos: Producto[];
   modelos: Modelo[];
-  onDelete:(id: number) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
 }
 
 interface ProductoModificar {
@@ -54,7 +54,7 @@ interface ProductoModificar {
   stockNuevo: number;
 }
 
-function Productos({ productos, modelos, onDelete}: ProductosProps) {
+function Productos({ productos, modelos, onDelete }: ProductosProps) {
   const [tipoCelulares, setTipoCelulares] = useState("nuevos");
   const [filaExpandida, setFilaExpandida] = useState<number | null>(null);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -68,7 +68,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
   const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
   const { isOpen: isVentaOpen, onOpen: onVentaOpen, onClose: onVentaClose } = useDisclosure();
   const [productoModificar, setProductoModificar] = useState<ProductoModificar | null>(null);
-  const [productoNewVenta ,setProductoNewVenta]= useState<Producto | null>(null);
+  const [productoNewVenta, setProductoNewVenta] = useState<Producto | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const isMobile = useBreakpointValue(
@@ -122,7 +122,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
     setIsModalUpdateOpen(true);
   }
 
-  const handleDelete = async (id : number) => {
+  const handleDelete = async (id: number) => {
     await deleteProducto(id);
     await fetchProductos();
     closeConfirmDialog()
@@ -135,7 +135,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
   const disminuirStock = async (producto: Producto, stockNuevo: number) => {
     const id = producto.id;
     setProductoModificar({ id, stockNuevo });
-     setProductoNewVenta(producto)
+    setProductoNewVenta(producto)
     if (producto.categoria == 3) {
       setProductoAEliminar(null)
       setAccesorioAEliminar(producto)
@@ -161,7 +161,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
 
   const manejarRegistrarVenta = () => {
     onConfirmClose();
-    onVentaOpen(); 
+    onVentaOpen();
   };
 
   return (
@@ -298,14 +298,14 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                           <Td colSpan={7} bg="gray.50">
                             <Flex justify="space-around" py={2} flexWrap="wrap">
                               <Text>
-                                <strong>Valor Neto:</strong> ${producto.valorNeto}
-                              </Text>
-                              <Text>
                                 <strong>Mayorista:</strong> ${producto.mayorista}
                               </Text>
                               <Text>
                                 <strong>Minorista:</strong> ${producto.minorista}
                               </Text>
+                              {producto.valorNeto !== 0 && (
+                                <Text><strong>Valor Neto:</strong>${producto.valorNeto}</Text>
+                              )}
                             </Flex>
                           </Td>
                         </Tr>
@@ -373,7 +373,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                 onChange={(e) => setBusquedaCelulares(e.target.value)}
               />
             )}
-            
+
             {celulares.map((producto: any) => (
               <CardMobileCelular
                 key={producto.id}
@@ -488,14 +488,14 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                           <Td colSpan={7} bg="gray.50">
                             <Flex justify="space-around" py={2} flexWrap="wrap">
                               <Text>
-                                <strong>Valor Neto:</strong> ${accesorio.valorNeto}
-                              </Text>
-                              <Text>
                                 <strong>Mayorista:</strong> ${accesorio.mayorista}
                               </Text>
                               <Text>
                                 <strong>Minorista:</strong> ${accesorio.minorista}
                               </Text>
+                              {accesorio.valorNeto !== 0 && (
+                                <Text><strong>Valor Neto:</strong>${accesorio.valorNeto}</Text>
+                              )}
                             </Flex>
                           </Td>
                         </Tr>
@@ -557,13 +557,13 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
         )}
       </Flex>
 
-      {isVentaOpen && productoNewVenta &&  (
-        <RegistrarVentaEnProductos 
-        isOpen={isVentaOpen}
-        onClose={onVentaClose}
-        stockNuevo={productoModificar?.stockNuevo}
-        productoNewVenta={productoNewVenta}
-        modelos={modelos}
+      {isVentaOpen && productoNewVenta && (
+        <RegistrarVentaEnProductos
+          isOpen={isVentaOpen}
+          onClose={onVentaClose}
+          stockNuevo={productoModificar?.stockNuevo}
+          productoNewVenta={productoNewVenta}
+          modelos={modelos}
         />
       )}
 
@@ -635,7 +635,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader> Si no registras la venta el producto no aparecerá después</ModalHeader>
-  
+
             <ModalFooter >
               <Flex direction={"row"} justifyContent={"center"} w={"100%"}>
                 <Button colorScheme="green" mr={3} onClick={manejarRegistrarVenta}>

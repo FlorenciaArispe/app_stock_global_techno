@@ -192,7 +192,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
             </Box>
           )}
           {step === 1 && (
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel>Selecciona la categoría</FormLabel>
               <Select
                 placeholder="Seleccione una categoría"
@@ -210,7 +210,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
           {step === 2 && categoriaSeleccionada !== "Accesorio" && (
             <>
               <Flex flexDirection={"row"} gap={6} mb={4}>
-                <FormControl>
+                <FormControl isRequired>
                   <FormLabel>Modelo</FormLabel>
                   <Select
                     placeholder="Selecciona un modelo"
@@ -237,7 +237,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                   )}
                 </FormControl>
                 {modelo === "Otro" && (
-                  <FormControl mt={2} isInvalid={!!modeloError}>
+                  <FormControl isRequired mt={2} isInvalid={!!modeloError}>
                     <FormLabel>Nuevo modelo</FormLabel>
                     <Input
                       placeholder="Escribe el modelo"
@@ -259,8 +259,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                 )}
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
-                <FormControl isInvalid={!!errors.color}>
-                  <FormLabel>Color {categoriaSeleccionada === "Celular Usado" && "y Batería"}</FormLabel>
+                <FormControl isRequired isInvalid={!!errors.color}>
+                  <FormLabel>Color{categoriaSeleccionada === "Celular Usado" && "y Batería"}</FormLabel>
                   <Input
                     value={color}
                     onChange={(e) => {
@@ -275,7 +275,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                     <Text color="red.500" fontSize="sm">{errors.color}</Text>
                   )}
                 </FormControl>
-                <FormControl isInvalid={!!errors.capacidad}>
+                <FormControl isRequired isInvalid={!!errors.capacidad}>
                   <FormLabel>Capacidad</FormLabel>
                   <Select
                     placeholder="Selecciona "
@@ -305,7 +305,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
           {step === 2 && (
             <>
               {categoriaSeleccionada === "Accesorio" && (
-                <FormControl isInvalid={!!errors.nombreAccesorio} mb={4}>
+                <FormControl isRequired isInvalid={!!errors.nombreAccesorio} mb={4}>
                   <FormLabel>Nombre del Accesorio</FormLabel>
                   <Input placeholder="Nombre" value={nombreAccesorio} 
                    onChange={(e) => {
@@ -327,7 +327,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                 </FormControl>
               )}
               <Flex flexDirection={"row"} gap={6} mb={4}>
-                <FormControl isInvalid={!!errors.stock}>
+                <FormControl isRequired isInvalid={!!errors.stock}>
                   <FormLabel>Stock</FormLabel>
                   <Input type="number" value={stock} onChange={(e) => {
                     setStock(e.target.value);
@@ -348,7 +348,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                 </FormControl>
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
-                <FormControl isInvalid={!!errors.minorista}>
+                <FormControl isRequired isInvalid={!!errors.minorista}>
                   <FormLabel>Precio Minorista</FormLabel>
                   <Input type="number" value={minorista} onChange={(e) => {
                     setMinorista(e.target.value);
@@ -360,7 +360,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                     </Text>
                   )}
                 </FormControl>
-                <FormControl isInvalid={!!errors.mayorista}>
+                <FormControl isRequired isInvalid={!!errors.mayorista}>
                   <FormLabel>Precio Mayorista</FormLabel>
                   <Input type="number" value={mayorista} onChange={(e) => {
                     setMayorista(e.target.value);
