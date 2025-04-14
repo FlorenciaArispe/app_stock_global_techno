@@ -40,8 +40,6 @@ const Ventas = ({ productos, modelos, ventas }: VentasProps) => {
     { fallback: "base" }
   );
 
-  console.log(ventas)
-
   const onDelete = async () => {
     try {
       await deleteVenta(Number(selectedVentaId));

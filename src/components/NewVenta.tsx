@@ -36,13 +36,8 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
   };
 
   const actualizarProducto = (index: number, key: keyof ProductoSeleccionado, value: string) => {
-    // if(key === "cantidad"){
-    //   setErrorCantidad(null)
-    // }
-    console.log(value, index, key)
     const nuevosProductos = [...productosSeleccionados];
     nuevosProductos[index][key] = value;
-    console.log("nuevo producto", nuevosProductos)
     setProductosSeleccionados(nuevosProductos);
   };
 
@@ -58,7 +53,6 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
 
     const productosFormateados = productosSeleccionados.map((p) => {
       const producto = productos.find((prod : Producto) => prod.id == Number(p.id));
-      console.log("PRODUCTOOOOO", producto)
       if (!producto) {
         throw new Error(`Producto con ID ${p.id} no encontrado`);
       }
@@ -78,7 +72,6 @@ const NewVenta = ({ modelos, productos, isOpen, onClose }: NewVentaProps) => {
     const total = calcularTotal();
   
     try {
-      console.log("PRODUCTOS FORMATEADOS",productosFormateados)
       await createVenta({
         fecha_venta,
         cliente,
