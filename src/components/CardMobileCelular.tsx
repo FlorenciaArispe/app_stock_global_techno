@@ -68,9 +68,11 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
       </Flex>
 
       {expandido && (
-        <Flex p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
+        <Flex mt={1} p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
           <Text><strong>Mayorista:</strong> ${producto.mayorista} <strong> Minorista:</strong> ${producto.minorista} </Text>
-          <Text><strong> Valor Neto:</strong> ${producto.valorNeto}</Text>
+          {producto.valorNeto !== 0 && (
+          <Text><strong>Valor Neto:</strong>${producto.valorNeto}</Text>
+        )}
         </Flex>
       )}
     </Box>

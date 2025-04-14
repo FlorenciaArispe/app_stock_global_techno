@@ -121,7 +121,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       color: capitalizarPrimeraLetra(color),
       capacidad,
       stock,
-      valorNeto : valorNeto ? Number(valorNeto) : 0,
+      valorNeto: valorNeto ? Number(valorNeto) : 0,
       mayorista,
       minorista,
       nombre: nombreAccesorio,
@@ -150,12 +150,12 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}size={{ base: "full", md: "xl" }}>
-    <ModalOverlay />
-    <ModalContent
-      mt={{ base: '0', md: '5', lg: '20' }}
-      borderTopRadius={{ base: '0', md: 'md' }}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} size={{ base: "full", md: "xl" }}>
+      <ModalOverlay />
+      <ModalContent
+        mt={{ base: '0', md: '5', lg: '20' }}
+        borderTopRadius={{ base: '0', md: 'md' }}
+      >
         <ModalHeader>Editar Producto</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -169,7 +169,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
 
           {categoriaSeleccionada !== "Accesorio" && (
             <>
-              <FormControl mb={3} isInvalid={!!errors.modelo}>
+              <FormControl isRequired mb={3} isInvalid={!!errors.modelo}>
                 <FormLabel>Modelo</FormLabel>
                 <Select value={modelo} onChange={(e) => setModelo(e.target.value)}>
                   {modelos.map((m: any) => (
@@ -182,7 +182,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
               </FormControl>
 
               {modelo === "Otro" && (
-                <FormControl mb={3} isInvalid={!!errors.modeloOtro}>
+                <FormControl isRequired mb={3} isInvalid={!!errors.modeloOtro}>
                   <FormLabel>Nuevo Modelo</FormLabel>
                   <Input
                     value={modeloOtro}
@@ -193,7 +193,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                   )}
                 </FormControl>
               )}
-              <FormControl mb={3} isInvalid={!!errors.color}>
+              <FormControl isRequired mb={3} isInvalid={!!errors.color}>
                 <FormLabel>Color</FormLabel>
                 <Input value={color}
                   onChange={(e) => {
@@ -208,7 +208,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                   <Text color="red.500" fontSize="sm">{errors.color}</Text>
                 )}
               </FormControl>
-              <FormControl isInvalid={!!errors.capacidad}>
+              <FormControl isRequired isInvalid={!!errors.capacidad}>
                 <FormLabel>Capacidad</FormLabel>
                 <Select
                   placeholder="Selecciona "
@@ -221,11 +221,11 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                     }
                   }}
                 >
-                 {capacidades.map((opcion : Capacidad) => (
-      <option key={opcion.id} value={opcion.nombre}>
-        {opcion.nombre}
-      </option>
-    ))}
+                  {capacidades.map((opcion: Capacidad) => (
+                    <option key={opcion.id} value={opcion.nombre}>
+                      {opcion.nombre}
+                    </option>
+                  ))}
                 </Select>
                 {errors.capacidad && (
                   <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
@@ -235,7 +235,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
           )}
 
           {categoriaSeleccionada === "Accesorio" && (
-            <FormControl mb={3} isInvalid={!!errors.nombreAccesorio}>
+            <FormControl isRequired mb={3} isInvalid={!!errors.nombreAccesorio}>
               <FormLabel>Nombre Accesorio</FormLabel>
               <Input
                 value={nombreAccesorio}
@@ -262,7 +262,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
             </FormControl>
           )}
           <Flex gap={2} mt={3}>
-            <FormControl mb={3} isInvalid={!!errors.stock}>
+            <FormControl isRequired mb={3} isInvalid={!!errors.stock}>
               <FormLabel>Stock</FormLabel>
               <Input type="number" value={stock}
                 onChange={(e) => {
@@ -286,7 +286,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
             </FormControl>
           </Flex>
           <Flex gap={2}>
-            <FormControl mb={3} isInvalid={!!errors.mayorista}>
+            <FormControl isRequired mb={3} isInvalid={!!errors.mayorista}>
               <FormLabel>Precio Mayorista</FormLabel>
               <Input type="number" value={mayorista} onChange={(e) => {
                 setMayorista(e.target.value);
@@ -298,7 +298,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                 </Text>
               )}
             </FormControl>
-            <FormControl mb={3} isInvalid={!!errors.minorista}>
+            <FormControl isRequired mb={3} isInvalid={!!errors.minorista}>
               <FormLabel>Precio Minorista</FormLabel>
               <Input type="number" value={minorista} onChange={(e) => {
                 setMinorista(e.target.value);
