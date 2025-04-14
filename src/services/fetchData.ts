@@ -9,7 +9,6 @@ export const fetchProductos = async (): Promise<Producto[]> => {
       await supabase.auth.signOut();
       return [];
     }
-    console.error('Error fetching productos:', error);
     return [];
   }
 
@@ -24,7 +23,6 @@ export const fetchModelos = async (): Promise<Modelo[]> => {
       await supabase.auth.signOut();
       return [];
     }
-    console.error('Error fetching modelos:', error);
     return [];
   }
 
@@ -39,7 +37,6 @@ export const fetchVentas = async (): Promise<Venta[]> => {
       await supabase.auth.signOut();
       return [];
     }
-    console.error('Error fetching ventas:', error);
     return [];
   }
 

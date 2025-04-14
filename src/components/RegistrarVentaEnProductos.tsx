@@ -28,7 +28,6 @@ const RegistrarVentaEnProductos = ({ isOpen, onClose, stockNuevo, productoNewVen
   };
 
   const guardarVenta = async () => {
-    console.log("Producto seleccionado:", productoSeleccionado);
     const total = productoSeleccionado.tipoVenta === "minorista" ? productoNewVenta.minorista : productoNewVenta.mayorista
 
     const productoFormateado = [{
