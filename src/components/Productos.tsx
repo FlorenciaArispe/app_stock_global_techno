@@ -29,7 +29,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
@@ -41,7 +40,6 @@ import ModalConfirmacionDelete from "./ModalConfirmacionDelete";
 import { CardMobileCelular } from "./CardMobileCelular";
 import { CardMobileAccesorio } from "./CardMobileAccesorio";
 import { Modelo, Producto } from "../types";
-import NewVenta from "./NewVenta";
 import { fetchProductos } from "../services/fetchData";
 import RegistrarVentaEnProductos from "./RegistrarVentaEnProductos";
 
@@ -130,15 +128,17 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
     closeConfirmDialog()
   }
 
-  const actualizarStock = async (producto: Producto, stockNuevo: number) => {
+  const aumentarStock = async (producto: Producto, stockNuevo: number) => {
+    await updateStockProducto(producto.id, stockNuevo);
+  }
+
+  const disminuirStock = async (producto: Producto, stockNuevo: number) => {
     const id = producto.id;
     setProductoModificar({ id, stockNuevo });
-    setProductoNewVenta(producto)
-
+     setProductoNewVenta(producto)
     if (producto.categoria == 3) {
       setProductoAEliminar(null)
       setAccesorioAEliminar(producto)
-
     } else {
       setAccesorioAEliminar(null)
       setProductoAEliminar(producto)
@@ -149,7 +149,6 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
   const confirmarActualizarStock = async () => {
     if (!productoModificar) return;
     const { id, stockNuevo } = productoModificar;
-
     if (stockNuevo <= 0) {
       openConfirmDialog()
     } else {
@@ -239,14 +238,14 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                               icon={<MinusIcon />}
                               aria-label="Disminuir stock"
                               size="sm"
-                              onClick={() => actualizarStock(producto, producto.stock - 1)}
+                              onClick={() => disminuirStock(producto, producto.stock - 1)}
                             />
                             <Text minW="20px" textAlign="center">{producto.stock}</Text>
                             <IconButton
                               icon={<AddIcon />}
                               aria-label="Aumentar stock"
                               size="sm"
-                              onClick={() => actualizarStock(producto, producto.stock + 1)}
+                              onClick={() => aumentarStock(producto, producto.stock + 1)}
                             />
                           </Flex>
                         </Td>
@@ -389,7 +388,8 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                 }}
                 onExpandir={() => toggleExpandirFila(producto.id)}
                 expandido={filaExpandida === producto.id}
-                actualizarStock={actualizarStock}
+                disminuirStock={disminuirStock}
+                aumentarStock={aumentarStock}
               />
             ))}
           </Box>
@@ -411,7 +411,6 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
               <Table variant="simple">
                 <Thead bg="gray.100">
                   <Tr>
-                    <Th textAlign={"center"}>ID</Th>
                     <Th textAlign={"center"}>Nombre</Th>
                     <Th textAlign={"center"}>Stock</Th>
                     <Th textAlign={"center"}>Acciones</Th>
@@ -421,7 +420,6 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                   {accesoriosFiltrados.map((accesorio: any) => (
                     <Fragment key={accesorio.id}>
                       <Tr key={accesorio.id}>
-                        <Td textAlign={"center"}>{accesorio.id}</Td>
                         <Td textAlign={"center"}>{accesorio.nombre}</Td>
                         <Td textAlign="center">
                           <Flex justifyContent="center" alignItems="center" gap={2}>
@@ -429,7 +427,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                               icon={<MinusIcon />}
                               aria-label="Disminuir stock"
                               size="sm"
-                              onClick={() => actualizarStock(accesorio, accesorio.stock - 1)}
+                              onClick={() => disminuirStock(accesorio, accesorio.stock - 1)}
                               isDisabled={accesorio.stock <= 0}
                             />
                             {accesorio.stock}
@@ -437,7 +435,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                               icon={<AddIcon />}
                               aria-label="Aumentar stock"
                               size="sm"
-                              onClick={() => actualizarStock(accesorio, accesorio.stock + 1)}
+                              onClick={() => aumentarStock(accesorio, accesorio.stock + 1)}
                             />
                           </Flex>
                         </Td>
@@ -551,7 +549,8 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
                 }}
                 onExpandir={() => toggleExpandirFila(accesorio.id)}
                 expandido={filaExpandida === accesorio.id}
-                actualizarStock={actualizarStock}
+                disminuirStock={disminuirStock}
+                aumentarStock={aumentarStock}
               />
             ))}
           </Box>
@@ -564,6 +563,7 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
         onClose={onVentaClose}
         stockNuevo={productoModificar?.stockNuevo}
         productoNewVenta={productoNewVenta}
+        modelos={modelos}
         />
       )}
 
@@ -634,10 +634,8 @@ function Productos({ productos, modelos, onDelete}: ProductosProps) {
         <Modal isOpen={isConfirmOpen} onClose={onConfirmClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>¿Quieres registrar la venta o simplemente actualizar el stock?</ModalHeader>
-            <ModalBody>
-              (Si no registras la venta el producto no aparecerá después)
-            </ModalBody>
+            <ModalHeader> Si no registras la venta el producto no aparecerá después</ModalHeader>
+  
             <ModalFooter >
               <Flex direction={"row"} justifyContent={"center"} w={"100%"}>
                 <Button colorScheme="green" mr={3} onClick={manejarRegistrarVenta}>

@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
-export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, actualizarStock }: any) => {
+export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, disminuirStock , aumentarStock }: any) => {
   return (
     <Box
       w={"100%"}
@@ -32,14 +32,14 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
               icon={<MinusIcon />}
               aria-label="Disminuir stock"
               size="xs"
-              onClick={() => actualizarStock(accesorio, accesorio.stock - 1)}
+              onClick={() => disminuirStock(accesorio, accesorio.stock - 1)}
             />
             {accesorio.stock}
             <IconButton
               icon={<AddIcon />}
               aria-label="Aumentar stock"
               size="xs"
-              onClick={() => actualizarStock(accesorio, accesorio.stock + 1)}
+              onClick={() => aumentarStock(accesorio, accesorio.stock + 1)}
             />
           </Flex>
         </Flex>
@@ -69,7 +69,7 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
       </Flex>
       {expandido && (
         <Flex p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
-          <Text><strong>Mayorista:</strong> ${accesorio.mayorista} <strong> Minorista:</strong> ${accesorio.minorista}</Text>
+Flex          <Text><strong>Mayorista:</strong> ${accesorio.mayorista} <strong> Minorista:</strong> ${accesorio.minorista}</Text>
           <Text><strong>Valor Neto:</strong> ${accesorio.valorNeto}</Text>
         </Flex>
       )}

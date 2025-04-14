@@ -14,5 +14,5 @@ if (rootElement) {
     </React.StrictMode>
   );
 } else {
-  console.error("❌ No se encontró el elemento con id 'root'. Asegúrate de que existe en tu index.html");
+  console.error("No se encontró el elemento con id 'root'. Asegúrate de que existe en tu index.html");
 }
