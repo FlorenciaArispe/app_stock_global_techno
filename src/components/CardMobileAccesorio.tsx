@@ -1,5 +1,5 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
 export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandir, expandido, disminuirStock , aumentarStock }: any) => {
@@ -43,8 +43,7 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
             />
           </Flex>
         </Flex>
-        <Box>
-          <Tooltip label="Editar">
+        <Flex>
             <IconButton
               icon={<MdEdit />}
               aria-label="Editar"
@@ -53,8 +52,6 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
               variant="ghost"
               onClick={onEditar}
             />
-          </Tooltip>
-          <Tooltip label="Eliminar">
             <IconButton
               icon={<MdDelete />}
               aria-label="Eliminar"
@@ -63,9 +60,7 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
               variant="ghost"
               onClick={onEliminar}
             />
-          </Tooltip>
-
-        </Box>
+        </Flex>
       </Flex>
       {expandido && (
         <Flex mt={1} p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>

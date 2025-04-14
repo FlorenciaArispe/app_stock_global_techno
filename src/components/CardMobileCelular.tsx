@@ -1,5 +1,5 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { Box, Flex, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import { MdDelete, MdEdit, MdExpandLess, MdExpandMore } from "react-icons/md";
 
 export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, expandido, disminuirStock , aumentarStock }: any) => {
@@ -44,7 +44,6 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
           </Flex>
         </Flex>
         <Flex>
-          <Tooltip label="Editar">
             <IconButton
               icon={<MdEdit />}
               aria-label="Editar"
@@ -53,8 +52,6 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
               variant="ghost"
               onClick={onEditar}
             />
-          </Tooltip>
-          <Tooltip label="Eliminar">
             <IconButton
               icon={<MdDelete />}
               aria-label="Eliminar"
@@ -63,7 +60,6 @@ export const CardMobileCelular = ({ producto, onEditar, onEliminar, onExpandir, 
               variant="ghost"
               onClick={onEliminar}
             />
-          </Tooltip>
         </Flex>
       </Flex>
 

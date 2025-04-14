@@ -28,7 +28,7 @@ export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => 
       <Flex justifyContent="space-between" mb={1}>
         <Flex>
           <Text mr={4} fontWeight="bold" fontSize="md">
-            {new Date(venta.fecha_venta).toLocaleDateString("es-AR")}
+            {venta.fecha_venta}
           </Text>
           <Flex alignContent={"center"}>
             <Text mr={2} fontSize="md" color="gray.500">

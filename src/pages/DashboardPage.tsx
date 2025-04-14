@@ -4,28 +4,14 @@ import { fetchModelos, fetchProductos, fetchVentas } from "../services/fetchData
 import { Modelo, Producto, Venta } from "../types";
 import supabase from "../supabase/supabase.service";
 
-export default function DashboardPage() {
-  const [setSession] = useState<any>(null);
+interface DashboardPageProps {
+  onLogout: () => Promise<void>;
+}
+
+export default function DashboardPage({ onLogout }: DashboardPageProps) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [ventas, setVentas] = useState<Venta[]>([]);
-
-  useEffect(() => {
-    const initSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-    };
-
-    initSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -78,7 +64,7 @@ export default function DashboardPage() {
       productos={productos}
       modelos={modelos}
       ventas={ventas}
-      setSession={setSession}
+      onLogout={onLogout}
     />
   );
 }

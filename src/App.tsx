@@ -18,11 +18,13 @@ function ProtectedRoute({ session }: { session: any }) {
 
 function App() {
   const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
+      setLoading(false);
     };
 
     initSession();
@@ -36,13 +38,31 @@ function App() {
     };
   }, []);
 
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  const handleLogout: () => Promise<void> = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+  
+    if (session) {
+      await supabase.auth.signOut();
+    }
+    setSession(null);
+  };
+  
+  
   return (
     <ChakraProvider>
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute session={session} />}>
-            <Route path="/inicio" element={<DashboardPage />} />
+            <Route path="/inicio"  element={
+        <DashboardPage
+          onLogout={handleLogout}
+        />
+      } />
           </Route>
           <Route
             path="*"
@@ -53,5 +73,6 @@ function App() {
     </ChakraProvider>
   );
 }
+
 
 export default App;

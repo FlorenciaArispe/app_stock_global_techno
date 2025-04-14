@@ -155,7 +155,7 @@ const Ventas = ({ productos, modelos, ventas }: VentasProps) => {
               <Tbody>
                 {ventasFiltradas?.map((venta, index) => (
                   <Tr key={index} height="60px">
-                    <Td>{new Date(venta.fecha_venta).toLocaleDateString("es-AR")}</Td>
+                    <Td>{venta.fecha_venta}</Td>
                     <Td>{venta.cliente || "Sin registro"}</Td>
                     <Td>
                       <Flex
