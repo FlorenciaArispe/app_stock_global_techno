@@ -5,7 +5,7 @@ import { Modelo, Producto, Venta } from "../types";
 import supabase from "../supabase/supabase.service";
 
 export default function DashboardPage() {
-  const [session, setSession] = useState<any>(null);
+  const [setSession] = useState<any>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [ventas, setVentas] = useState<Venta[]>([]);
