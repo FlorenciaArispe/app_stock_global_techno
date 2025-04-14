@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { createProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
-import { categorias } from "../data";
+import { Capacidad, capacidades, categorias } from "../data";
 import { Modelo, Producto } from "../types";
 import { fetchModelos, fetchProductos } from "../services/fetchData";
 
@@ -289,8 +289,11 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                       }
                     }}
                   >
-                    <option value="128GB">128GB</option>
-                    <option value="256GB">256GB</option>
+                     {capacidades.map((opcion : Capacidad) => (
+                          <option key={opcion.id} value={opcion.nombre}>
+                            {opcion.nombre}
+                          </option>
+                        ))}
                   </Select>
                   {errors.capacidad && (
                     <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
