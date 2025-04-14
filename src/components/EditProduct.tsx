@@ -16,10 +16,10 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   const [modeloError, setModeloError] = useState("");
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [stock, setStock] = useState<number>();
-  const [valorNeto, setValorNeto] = useState<number>();
-  const [mayorista, setMayorista] = useState<number>();
-  const [minorista, setMinorista] = useState<number>();
+  const [stock, setStock] = useState<string>("");
+  const [valorNeto, setValorNeto] = useState<string>("");
+  const [mayorista, setMayorista] = useState<string>("");
+  const [minorista, setMinorista] = useState<string>("");
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const toast = useToast();
@@ -84,7 +84,6 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       if (!nombreAccesorio) validationErrors.nombreAccesorio = "El nombre del accesorio es obligatorio.";
     }
     if (!stock) validationErrors.stock = "El stock es obligatorio.";
-    if (!valorNeto) validationErrors.valorNeto = "El valor neto es obligatorio.";
     if (!mayorista) validationErrors.mayorista = "El mayorista es obligatorio.";
     if (!minorista) validationErrors.minorista = "El minorista es obligatorio.";
     if (Object.keys(validationErrors).length > 0) {
@@ -122,7 +121,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       color: capitalizarPrimeraLetra(color),
       capacidad,
       stock,
-      valorNeto,
+      valorNeto : valorNeto ? Number(valorNeto) : 0,
       mayorista,
       minorista,
       nombre: nombreAccesorio,
@@ -264,7 +263,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
               <FormLabel>Stock</FormLabel>
               <Input type="number" value={stock}
                 onChange={(e) => {
-                  setStock(Number(e.target.value));
+                  setStock(e.target.value);
                   setErrors((prev) => ({ ...prev, stock: "" }));
 
                 }}
@@ -275,25 +274,19 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                 </Text>
               )}
             </FormControl>
-            <FormControl mb={3} isInvalid={!!errors.valorNeto}>
+            <FormControl mb={3} >
               <FormLabel>Valor Neto</FormLabel>
               <Input type="number" value={valorNeto}
                 onChange={(e) => {
-                  setValorNeto(Number(e.target.value));
-                  setErrors((prev) => ({ ...prev, valorNeto: "" }));
+                  setValorNeto(e.target.value);
                 }} />
-              {errors.valorNeto && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.valorNeto}
-                </Text>
-              )}
             </FormControl>
           </Flex>
           <Flex gap={2}>
             <FormControl mb={3} isInvalid={!!errors.mayorista}>
               <FormLabel>Precio Mayorista</FormLabel>
               <Input type="number" value={mayorista} onChange={(e) => {
-                setMayorista(Number(e.target.value));
+                setMayorista(e.target.value);
                 setErrors((prev) => ({ ...prev, mayorista: "" }));
               }} />
               {errors.mayorista && (
@@ -305,7 +298,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
             <FormControl mb={3} isInvalid={!!errors.minorista}>
               <FormLabel>Precio Minorista</FormLabel>
               <Input type="number" value={minorista} onChange={(e) => {
-                setMinorista(Number(e.target.value));
+                setMinorista(e.target.value);
                 setErrors((prev) => ({ ...prev, minorista: "" }));
               }} />
               {errors.minorista && (

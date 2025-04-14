@@ -22,18 +22,20 @@ import supabase from "./supabase/supabase.service";
 import { FaUser } from "react-icons/fa";
 import { Modelo, Producto, Venta } from "./types";
 import { fetchProductos } from "./services/fetchData";
-import { useState } from "react";
+import { Dispatch, useState } from "react";
 
 interface DashboardProps {
   productos: Producto[];
   ventas: Venta[];
   modelos: Modelo[];
+  setSession: Dispatch<any>;
 }
 
 function Dashboard({
   productos,
   ventas,
   modelos,
+  setSession
 }: DashboardProps) {
   const [activeScreen, setActiveScreen] = useState("ventas");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,6 +44,15 @@ function Dashboard({
     await deleteProducto(id)
     await fetchProductos()
   }
+
+  const handleLogout = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      await supabase.auth.signOut();
+    }
+    setSession(null);
+  };
 
   return (
     <Box bg="gray.100" h={"100vh"} overflowY="scroll"
@@ -79,7 +90,8 @@ function Dashboard({
             <MenuList>
               <MenuItem
                 icon={<HiOutlineLogout />}
-                onClick={() => supabase.auth.signOut()}
+                onClick={handleLogout}
+              
               >
                 Cerrar sesión
               </MenuItem>
@@ -109,7 +121,8 @@ function Dashboard({
                 Productos
               </Button>
               <Button w="100%" variant="ghost" color="white" fontWeight="bold"
-                onClick={() => supabase.auth.signOut()}>
+                onClick={handleLogout}
+>
                 Cerrar sesión
               </Button>
 

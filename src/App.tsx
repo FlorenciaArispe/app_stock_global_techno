@@ -1,86 +1,55 @@
-import { useEffect, useState } from 'react';
-import Dashboard from './Dashboard';
-import supabase from './supabase/supabase.service';
-import Login from './components/Login';
-import { ChakraProvider } from '@chakra-ui/react';
-import './App.css';
-import { Modelo, Producto, Venta } from './types';
-import { fetchModelos, fetchProductos, fetchVentas } from './services/fetchData';
+// App.tsx
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import { useEffect, useState } from "react";
+import supabase from "./supabase/supabase.service";
+
+function ProtectedRoute({ session }: { session: any }) {
+  return session ? <Outlet /> : <Navigate to="/login" />;
+}
 
 function App() {
   const [session, setSession] = useState<any>(null);
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [modelos, setModelos] = useState<Modelo[]>([]);
-  const [ventas, setVentas] = useState<Venta[]>([]);
 
   useEffect(() => {
+    const initSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+    };
+
+    initSession();
+
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-    
+
     return () => {
       authListener?.subscription.unsubscribe();
     };
   }, []);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const productosData = await fetchProductos();
-      const modelosData = await fetchModelos();
-      const ventasData = await fetchVentas();
-  
-      setProductos(productosData);
-      setModelos(modelosData);
-      setVentas(ventasData);
-    };
-  
-    fetchInitialData();
-  }, []);
-
-  useEffect(() => {
-    const productosChannel = supabase
-      .channel('productos')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, async () => {
-        const productosData = await fetchProductos();
-        setProductos(productosData);
-      })
-      .subscribe();
-  
-    const modelosChannel = supabase
-      .channel('modelos')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Modelo_celular' }, async () => {
-        const modelosData = await fetchModelos();
-        setModelos(modelosData); // <-- y acá
-      })
-      .subscribe();
-  
-    const ventasChannel = supabase
-      .channel('ventas')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Ventas' }, async () => {
-        const ventasData = await fetchVentas();
-        setVentas(ventasData); // <-- y acá
-      })
-      .subscribe();
-  
-    return () => {
-      productosChannel.unsubscribe();
-      modelosChannel.unsubscribe();
-      ventasChannel.unsubscribe();
-    };
-  }, []);  
-
   return (
     <ChakraProvider>
-      {session ? (
-       <Dashboard 
-       productos={productos}
-       modelos={modelos}
-       ventas={ventas}
-     />
-      ) : (
-        <Login onLogin={setSession} />
-      )}
-
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<ProtectedRoute session={session} />}>
+            <Route path="/inicio" element={<DashboardPage />} />
+          </Route>
+          <Route
+            path="*"
+            element={<Navigate to={session ? "/inicio" : "/login"} />}
+          />
+        </Routes>
+      </Router>
     </ChakraProvider>
   );
 }
