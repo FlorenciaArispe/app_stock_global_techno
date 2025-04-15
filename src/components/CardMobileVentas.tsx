@@ -1,4 +1,5 @@
 import { Box, Text, Flex, Divider, IconButton } from "@chakra-ui/react";
+import { format, parseISO } from "date-fns";
 import { MdDelete } from "react-icons/md";
 
 type ProductoVenta = {
@@ -12,8 +13,12 @@ type ProductoVenta = {
 export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => {
 
   const productos: ProductoVenta[] = typeof venta.productos === "string"
-  ? JSON.parse(venta.productos)
-  : venta.productos;
+    ? JSON.parse(venta.productos)
+    : venta.productos;
+
+    const fechaFormateada = venta.fecha_venta 
+    ? format(parseISO(venta.fecha_venta), 'dd/MM/yyyy')
+    : 'Fecha inválida';
 
   return (
     <Box
@@ -28,7 +33,7 @@ export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => 
       <Flex justifyContent="space-between" mb={1}>
         <Flex>
           <Text mr={4} fontWeight="bold" fontSize="md">
-            {venta.fecha_venta}
+            {fechaFormateada}
           </Text>
           <Flex alignContent={"center"}>
             <Text mr={2} fontSize="md" color="gray.500">
@@ -66,17 +71,17 @@ export const CardMobileVentas = ({ venta, onOpen, setSelectedVentaId }: any) => 
           flexWrap="wrap"
           gap={4}
         >
-        {Array.isArray(productos) &&
-  productos.map((p, i) => (
-    <Box key={i} mb={{ base: 2, md: 0 }}>
-      <Text>{`${p.nombre} ${p.descripcion ?? ""} x ${p.cantidad} ($${p.subtotal})`}</Text>
-      {p.imei && (
-        <Text fontSize="sm" color="gray.500" ml={2}>
-          IMEI: {p.imei}
-        </Text>
-      )}
-    </Box>
-))}
+          {Array.isArray(productos) &&
+            productos.map((p, i) => (
+              <Box key={i} mb={{ base: 2, md: 0 }}>
+                <Text>{`${p.nombre} ${p.descripcion ?? ""} x ${p.cantidad} ($${p.subtotal})`}</Text>
+                {p.imei && (
+                  <Text fontSize="sm" color="gray.500" ml={2}>
+                    IMEI: {p.imei}
+                  </Text>
+                )}
+              </Box>
+            ))}
         </Flex>
       </Box>
       <Text textAlign={"right"} fontWeight="bold" color="green.500" fontSize="md">

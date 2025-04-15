@@ -16,6 +16,7 @@ import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { deleteVenta } from "../supabase/ventas.service";
 import { Modelo, Producto, Venta } from "../types";
 import { fetchVentas } from "../services/fetchData";
+import { format, parseISO } from "date-fns";
 
 interface VentasProps {
   productos: Producto[];
@@ -76,6 +77,7 @@ const Ventas = ({ productos, modelos, ventas }: VentasProps) => {
   const handleDeleteConfirm = () => {
     onDelete()
   }
+  
 
   return (
     <Box p={{ base: 0, md: 5 }}>
@@ -155,7 +157,7 @@ const Ventas = ({ productos, modelos, ventas }: VentasProps) => {
               <Tbody>
                 {ventasFiltradas?.map((venta, index) => (
                   <Tr key={index} height="60px">
-                    <Td>{venta.fecha_venta}</Td>
+                    <Td>{format(parseISO(venta.fecha_venta), 'dd/MM/yyyy')}</Td>
                     <Td>{venta.cliente || "Sin registro"}</Td>
                     <Td>
                       <Flex
