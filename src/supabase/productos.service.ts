@@ -35,18 +35,23 @@ async function createProducto(
   color: string,
   modeloId: number,
   nombre: string
-) {
-  const { error } = await supabase.from("productos").insert({
-    stock,
-    categoria,
-    valorNeto,
-    mayorista,
-    minorista,
-    capacidad,
-    color,
-    modeloId,
-    nombre
-  });
+): Promise<number | undefined> {
+  const { data, error } = await supabase
+    .from("productos")
+    .insert({
+      stock,
+      categoria,
+      valorNeto,
+      mayorista,
+      minorista,
+      capacidad,
+      color,
+      modeloId,
+      nombre
+    })
+    .select("id") 
+    .single(); 
+
   if (error) {
     if (error.message === "JWT expired") {
       await supabase.auth.signOut();
@@ -54,7 +59,10 @@ async function createProducto(
     }
     throw error;
   }
+
+  return data?.id;
 }
+
 
 async function updateProducto(id: number, data: any) {
   const { error } = await supabase
@@ -84,4 +92,42 @@ async function updateStockProducto(id: number, nuevoStock: number) {
   }
 }
 
-export { getProductos, deleteProducto, createProducto, updateProducto, updateStockProducto };
+async function uploadFotosProducto(productoId: number, archivos: File[]) {
+  const bucket = "imagenes-productos";
+  const rutasSubidas: string[] = [];
+
+  for (let i = 0; i < archivos.length; i++) {
+ 
+    const archivo = archivos[i];
+
+    const extension = archivo.name.split(".").pop() || "jpg";
+
+    const nombreArchivo = `productos/${productoId}/foto${i + 1}-${Date.now()}.${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(nombreArchivo, archivo, { upsert: true });
+
+    if (uploadError) {
+      console.error("Error al subir archivo:", uploadError.message);
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage.from(bucket).getPublicUrl(nombreArchivo);
+    rutasSubidas.push(data.publicUrl);
+  }
+
+  const { error: updateError } = await supabase
+    .from("productos")
+    .update({ fotos: rutasSubidas })
+    .eq("id", productoId);
+
+  if (updateError) {
+    throw updateError;
+  }
+
+  return rutasSubidas;
+}
+
+
+export { getProductos, deleteProducto, createProducto, updateProducto, updateStockProducto , uploadFotosProducto};

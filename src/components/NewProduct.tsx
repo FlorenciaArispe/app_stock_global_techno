@@ -16,8 +16,9 @@ import {
   Box,
   Flex,
   useToast,
+  Image,
 } from "@chakra-ui/react";
-import { createProducto } from "../supabase/productos.service";
+import { createProducto, uploadFotosProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
 import { Capacidad, capacidades, categorias } from "../data";
 import { Modelo, Producto } from "../types";
@@ -45,6 +46,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const toast = useToast();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [imagenes, setImagenes] = useState<File[]>([]);
+const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleAgregarProducto = async () => {
     let validationErrors: { [key: string]: string } = {};
@@ -127,9 +130,13 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
     }
 
     try {
+   
+      console.log("IMAGENES",imagenes)
+  
       const neto=  valorNeto ? Number(valorNeto) : 0;
-      await createProducto(Number(stock), categoriaId ?? 1, neto , Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
-      await fetchProductos()
+     const productoId= await createProducto(Number(stock), categoriaId ?? 1, neto , Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+     console.log("ID DE PRODUCTO NUEVO", productoId)
+     await fetchProductos()
       onClose();
       await fetchModelos()
       setErrors({});
@@ -144,6 +151,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
         duration: 3000,
         isClosable: true,
       })
+    await uploadFotosProducto(Number(productoId), imagenes);
+
     }
     catch (error) {
       toast({
@@ -373,8 +382,64 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                   )}
                 </FormControl>
               </Flex>
+
+              <Box mt={4}>
+  <FormControl>
+    <FormLabel>Fotos del producto (máx. 4)</FormLabel>
+    <Input
+      type="file"
+      multiple
+      onChange={(e) => {
+        const files = e.target.files ? Array.from(e.target.files) : [];
+        if (files.length + imagenes.length > 4) {
+          toast({
+            title: "Límite de imágenes",
+            description: "Solo se permiten hasta 4 fotos por producto.",
+            status: "warning",
+            duration: 3000,
+            isClosable: true,
+          });
+          return;
+        }
+        const nuevas = [...imagenes, ...files].slice(0, 4);
+        setImagenes(nuevas);
+        const previews = nuevas.map((file) => URL.createObjectURL(file));
+        setPreviewUrls(previews);
+      }}
+    />
+    {previewUrls.length > 0 && (
+      <Flex mt={2} gap={3} wrap="wrap">
+        {previewUrls.map((url, index) => (
+          <Box key={index} position="relative">
+            <Image src={url} alt={`foto-${index}`} boxSize="80px" objectFit="cover" borderRadius="md" />
+            <Button
+              size="xs"
+              colorScheme="red"
+              position="absolute"
+              top="0"
+              right="0"
+              onClick={() => {
+                const nuevasImagenes = [...imagenes];
+                nuevasImagenes.splice(index, 1);
+                setImagenes(nuevasImagenes);
+                const nuevasPreviews = [...previewUrls];
+                nuevasPreviews.splice(index, 1);
+                setPreviewUrls(nuevasPreviews);
+              }}
+            >
+              ×
+            </Button>
+          </Box>
+        ))}
+      </Flex>
+    )}
+  </FormControl>
+</Box>
             </>
           )}
+
+
+
         </ModalBody>
         <ModalFooter>
           {step > 1 && (
