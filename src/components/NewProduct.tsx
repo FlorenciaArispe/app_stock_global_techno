@@ -47,7 +47,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const toast = useToast();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [imagenes, setImagenes] = useState<File[]>([]);
-const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleAgregarProducto = async () => {
     let validationErrors: { [key: string]: string } = {};
@@ -130,13 +130,13 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     }
 
     try {
-   
-      console.log("IMAGENES",imagenes)
-  
-      const neto=  valorNeto ? Number(valorNeto) : 0;
-     const productoId= await createProducto(Number(stock), categoriaId ?? 1, neto , Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
-     console.log("ID DE PRODUCTO NUEVO", productoId)
-     await fetchProductos()
+
+      console.log("IMAGENES", imagenes)
+
+      const neto = valorNeto ? Number(valorNeto) : 0;
+      const productoId = await createProducto(Number(stock), categoriaId ?? 1, neto, Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+      console.log("ID DE PRODUCTO NUEVO", productoId)
+      await fetchProductos()
       onClose();
       await fetchModelos()
       setErrors({});
@@ -151,7 +151,7 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
         duration: 3000,
         isClosable: true,
       })
-    await uploadFotosProducto(Number(productoId), imagenes);
+      await uploadFotosProducto(Number(productoId), imagenes);
 
     }
     catch (error) {
@@ -234,7 +234,7 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
                       }
                     }}
                   >
-                    {modelos.map((m : any) => (
+                    {modelos.map((m: any) => (
                       <option key={m.id} value={m.nombre}>
                         {m.nombre}
                       </option>
@@ -269,7 +269,7 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isRequired isInvalid={!!errors.color}>
-                  <FormLabel>Color{categoriaSeleccionada === "Celular Usado" && "y Batería"}</FormLabel>
+                  <FormLabel>Color{categoriaSeleccionada === "Celular Usado" && " y Batería"}</FormLabel>
                   <Input
                     value={color}
                     onChange={(e) => {
@@ -298,11 +298,11 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
                       }
                     }}
                   >
-                     {capacidades.map((opcion : Capacidad) => (
-                          <option key={opcion.id} value={opcion.nombre}>
-                            {opcion.nombre}
-                          </option>
-                        ))}
+                    {capacidades.map((opcion: Capacidad) => (
+                      <option key={opcion.id} value={opcion.nombre}>
+                        {opcion.nombre}
+                      </option>
+                    ))}
                   </Select>
                   {errors.capacidad && (
                     <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
@@ -316,18 +316,18 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
               {categoriaSeleccionada === "Accesorio" && (
                 <FormControl isRequired isInvalid={!!errors.nombreAccesorio} mb={4}>
                   <FormLabel>Nombre del Accesorio</FormLabel>
-                  <Input placeholder="Nombre" value={nombreAccesorio} 
-                   onChange={(e) => {
-                    const input = e.target.value;
-                    const capitalizado = input.charAt(0).toUpperCase() + input.slice(1);
-                
-                    setNombreAccesorio(capitalizado);
-                    setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
-                
-                    if (errors.general) {
-                      setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-                    }
-                  }} />
+                  <Input placeholder="Nombre" value={nombreAccesorio}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      const capitalizado = input.charAt(0).toUpperCase() + input.slice(1);
+
+                      setNombreAccesorio(capitalizado);
+                      setErrors((prev) => ({ ...prev, nombreAccesorio: "" }));
+
+                      if (errors.general) {
+                        setErrors(prevErrors => ({ ...prevErrors, general: '' }));
+                      }
+                    }} />
                   {errors.nombreAccesorio && (
                     <Text color="red.500" fontSize="sm">
                       {errors.nombreAccesorio}
@@ -352,7 +352,7 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
                   <FormLabel>Valor Neto</FormLabel>
                   <Input type="number" value={valorNeto} onChange={(e) => {
                     setValorNeto(e.target.value);
-                  
+
                   }} />
                 </FormControl>
               </Flex>
@@ -384,61 +384,59 @@ const [previewUrls, setPreviewUrls] = useState<string[]>([]);
               </Flex>
 
               <Box mt={4}>
-  <FormControl>
-    <FormLabel>Fotos del producto (máx. 4)</FormLabel>
-    <Input
-      type="file"
-      multiple
-      onChange={(e) => {
-        const files = e.target.files ? Array.from(e.target.files) : [];
-        if (files.length + imagenes.length > 4) {
-          toast({
-            title: "Límite de imágenes",
-            description: "Solo se permiten hasta 4 fotos por producto.",
-            status: "warning",
-            duration: 3000,
-            isClosable: true,
-          });
-          return;
-        }
-        const nuevas = [...imagenes, ...files].slice(0, 4);
-        setImagenes(nuevas);
-        const previews = nuevas.map((file) => URL.createObjectURL(file));
-        setPreviewUrls(previews);
-      }}
-    />
-    {previewUrls.length > 0 && (
-      <Flex mt={2} gap={3} wrap="wrap">
-        {previewUrls.map((url, index) => (
-          <Box key={index} position="relative">
-            <Image src={url} alt={`foto-${index}`} boxSize="80px" objectFit="cover" borderRadius="md" />
-            <Button
-              size="xs"
-              colorScheme="red"
-              position="absolute"
-              top="0"
-              right="0"
-              onClick={() => {
-                const nuevasImagenes = [...imagenes];
-                nuevasImagenes.splice(index, 1);
-                setImagenes(nuevasImagenes);
-                const nuevasPreviews = [...previewUrls];
-                nuevasPreviews.splice(index, 1);
-                setPreviewUrls(nuevasPreviews);
-              }}
-            >
-              ×
-            </Button>
-          </Box>
-        ))}
-      </Flex>
-    )}
-  </FormControl>
-</Box>
+                <FormControl>
+                  <FormLabel>Fotos del producto (máx. 4)</FormLabel>
+                  <Input
+                    type="file"
+                    multiple
+                    onChange={(e) => {
+                      const files = e.target.files ? Array.from(e.target.files) : [];
+                      if (files.length + imagenes.length > 4) {
+                        toast({
+                          title: "Límite de imágenes",
+                          description: "Solo se permiten hasta 4 fotos por producto.",
+                          status: "warning",
+                          duration: 3000,
+                          isClosable: true,
+                        });
+                        return;
+                      }
+                      const nuevas = [...imagenes, ...files].slice(0, 4);
+                      setImagenes(nuevas);
+                      const previews = nuevas.map((file) => URL.createObjectURL(file));
+                      setPreviewUrls(previews);
+                    }}
+                  />
+                  {previewUrls.length > 0 && (
+                    <Flex mt={2} gap={3} wrap="wrap">
+                      {previewUrls.map((url, index) => (
+                        <Box key={index} position="relative">
+                          <Image src={url} alt={`foto-${index}`} boxSize="80px" objectFit="cover" borderRadius="md" />
+                          <Button
+                            size="xs"
+                            colorScheme="red"
+                            position="absolute"
+                            top="0"
+                            right="0"
+                            onClick={() => {
+                              const nuevasImagenes = [...imagenes];
+                              nuevasImagenes.splice(index, 1);
+                              setImagenes(nuevasImagenes);
+                              const nuevasPreviews = [...previewUrls];
+                              nuevasPreviews.splice(index, 1);
+                              setPreviewUrls(nuevasPreviews);
+                            }}
+                          >
+                            ×
+                          </Button>
+                        </Box>
+                      ))}
+                    </Flex>
+                  )}
+                </FormControl>
+              </Box>
             </>
           )}
-
-
 
         </ModalBody>
         <ModalFooter>

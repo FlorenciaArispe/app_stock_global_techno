@@ -3,11 +3,13 @@ import {
   Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody,
   ModalCloseButton, FormControl, FormLabel, Input, ModalFooter, Select,
   Text, Box, Flex, useToast,
+  Image,
 } from "@chakra-ui/react";
-import { updateProducto } from "../supabase/productos.service";
+import { updateProducto, uploadFotosProducto } from "../supabase/productos.service";
 import { createModelo } from "../supabase/modelo.service";
 import { Capacidad, capacidades, categorias } from "../data";
 import { fetchModelos } from "../services/fetchData";
+import supabase from "../supabase/supabase.service";
 
 function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProductos }: any) {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
@@ -23,6 +25,8 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   const [nombreAccesorio, setNombreAccesorio] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const toast = useToast();
+  const [imagenes, setImagenes] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
     if (producto) {
@@ -36,6 +40,9 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       setMayorista(producto.mayorista);
       setMinorista(producto.minorista);
       setNombreAccesorio(producto.nombre);
+      if (producto) {
+        setPreviewUrls(producto.fotos ?? []);
+      }
     }
   }, [producto]);
 
@@ -115,7 +122,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       return;
     }
 
-    const dataToUpdate = {
+    const dataToUpdate : any= {
       categoria: categoriaId,
       modeloId: modeloFinal,
       color: capitalizarPrimeraLetra(color),
@@ -128,6 +135,30 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
     };
 
     try {
+
+      const fotosOriginales = producto.fotos ?? [];
+      const nuevasASubir = imagenes; // archivos nuevos a subir
+      const urlsFinales = fotosOriginales.filter((url : string) =>
+        previewUrls.includes(url)
+      );
+
+      if (nuevasASubir.length > 0) {
+        const nuevasUrls = await uploadFotosProducto(producto.id, nuevasASubir);
+        urlsFinales.push(...nuevasUrls);
+      }
+      const eliminadas = fotosOriginales.filter(
+        (url: string) => !urlsFinales.includes(url)
+      );
+
+      if (eliminadas.length > 0) {
+        const archivosAEliminar = eliminadas.map((url : string) =>
+          url.split("/storage/v1/object/public/imagenes-productos/")[1]
+        );
+        await supabase.storage.from("imagenes-productos").remove(archivosAEliminar);
+      }
+
+      dataToUpdate.fotos = urlsFinales.slice(0, 4);
+
       await updateProducto(producto.id, dataToUpdate);
       await fetchProductos();
       onClose();
@@ -138,15 +169,17 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Ocurrió un error al actualizar el producto.",
+        description: error.message || "Ocurrió un error al actualizar el producto.",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
     }
+
+
   };
 
   return (
@@ -311,6 +344,70 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
               )}
             </FormControl>
           </Flex>
+          <Box mt={4}>
+            <FormControl>
+              <FormLabel>Fotos del producto (máx. 4)</FormLabel>
+              <Input
+                type="file"
+                multiple
+                onChange={(e) => {
+                  const files = e.target.files ? Array.from(e.target.files) : [];
+                  if (files.length + previewUrls.length > 4) {
+                    toast({
+                      title: "Límite de imágenes",
+                      description: "Solo se permiten hasta 4 fotos por producto.",
+                      status: "warning",
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                    return;
+                  }
+                  const nuevas = [...imagenes, ...files].slice(0, 4);
+                  setImagenes(nuevas);
+
+                  const nuevasPreviews = [
+                    ...previewUrls,
+                    ...files.map((file) => URL.createObjectURL(file)),
+                  ].slice(0, 4);
+                  setPreviewUrls(nuevasPreviews);
+                }}
+              />
+              {previewUrls.length > 0 && (
+                <Flex mt={2} gap={3} wrap="wrap">
+                  {previewUrls.map((url, index) => (
+                    <Box key={index} position="relative">
+                      <Image
+                        src={url}
+                        alt={`foto-${index}`}
+                        boxSize="80px"
+                        objectFit="cover"
+                        borderRadius="md"
+                      />
+                      <Button
+                        size="xs"
+                        colorScheme="red"
+                        position="absolute"
+                        top="0"
+                        right="0"
+                        onClick={() => {
+                          const nuevasPreviews = [...previewUrls];
+                          nuevasPreviews.splice(index, 1);
+                          setPreviewUrls(nuevasPreviews);
+
+                          const nuevasImagenes = [...imagenes];
+                          nuevasImagenes.splice(index, 1);
+                          setImagenes(nuevasImagenes);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </Box>
+                  ))}
+                </Flex>
+              )}
+            </FormControl>
+          </Box>
+
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleGuardar}>
