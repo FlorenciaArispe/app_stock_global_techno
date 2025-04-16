@@ -48,8 +48,10 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [imagenes, setImagenes] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
 
   const handleAgregarProducto = async () => {
+    setIsSaving(true);
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal;
     if (modelo === "Otro") {
@@ -163,6 +165,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
         isClosable: true,
       }
       )
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -462,6 +466,8 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
               colorScheme="green"
               onClick={handleAgregarProducto}
               isDisabled={modelo === "Otro" && (!!modeloError || !modeloOtro)}
+               isLoading={isSaving}
+                        loadingText="Guardando"
             >
               Agregar
             </Button>

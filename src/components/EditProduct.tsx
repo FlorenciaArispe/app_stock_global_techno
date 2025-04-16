@@ -27,6 +27,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   const toast = useToast();
   const [imagenes, setImagenes] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (producto) {
@@ -62,6 +63,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   };
 
   const handleGuardar = async () => {
+    setIsSaving(true);
     let validationErrors: { [key: string]: string } = {};
     let modeloFinal: any;
     if (!categoriaSeleccionada) validationErrors.categoria = "La categoría es obligatoria.";
@@ -122,7 +124,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       return;
     }
 
-    const dataToUpdate : any= {
+    const dataToUpdate: any = {
       categoria: categoriaId,
       modeloId: modeloFinal,
       color: capitalizarPrimeraLetra(color),
@@ -137,8 +139,8 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
     try {
 
       const fotosOriginales = producto.fotos ?? [];
-      const nuevasASubir = imagenes; // archivos nuevos a subir
-      const urlsFinales = fotosOriginales.filter((url : string) =>
+      const nuevasASubir = imagenes; 
+      const urlsFinales = fotosOriginales.filter((url: string) =>
         previewUrls.includes(url)
       );
 
@@ -151,7 +153,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
       );
 
       if (eliminadas.length > 0) {
-        const archivosAEliminar = eliminadas.map((url : string) =>
+        const archivosAEliminar = eliminadas.map((url: string) =>
           url.split("/storage/v1/object/public/imagenes-productos/")[1]
         );
         await supabase.storage.from("imagenes-productos").remove(archivosAEliminar);
@@ -177,6 +179,8 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsSaving(false);
     }
 
 
@@ -410,9 +414,16 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
 
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleGuardar}>
+          <Button
+            colorScheme="blue"
+            mr={3}
+            onClick={handleGuardar}
+            isLoading={isSaving}
+            loadingText="Guardando"
+          >
             Guardar Cambios
           </Button>
+
           <Button variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
