@@ -168,7 +168,6 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
   return (
     <Box p={{ base: 0, md: 5 }} bg={"gray.100"}
     >
-
       <Flex mb={5}>
         <Button
           w={{ base: "100%", md: "190px" }}
