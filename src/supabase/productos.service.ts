@@ -28,12 +28,11 @@ async function deleteProducto(id: number) {
 async function createProducto(
   stock: number,
   categoria: number,
-  valorNeto: number,
   mayorista: number,
   minorista: number,
   capacidad: string,
   color: string,
-  modeloId: number,
+  modelo: string,
   nombre: string
 ): Promise<number | undefined> {
   const { data, error } = await supabase
@@ -41,12 +40,11 @@ async function createProducto(
     .insert({
       stock,
       categoria,
-      valorNeto,
       mayorista,
       minorista,
       capacidad,
       color,
-      modeloId,
+      modelo,
       nombre
     })
     .select("id") 

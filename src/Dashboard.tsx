@@ -36,7 +36,7 @@ function Dashboard({
   modelos,
   onLogout
 }: DashboardProps) {
-  const [activeScreen, setActiveScreen] = useState("ventas");
+  const [activeScreen, setActiveScreen] = useState("productos");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDeleteProduct = async (id: number): Promise<void> => {

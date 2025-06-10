@@ -163,9 +163,12 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
     onVentaOpen();
   };
 
+  
+
   return (
     <Box p={{ base: 0, md: 5 }} bg={"gray.100"}
     >
+
       <Flex mb={5}>
         <Button
           w={{ base: "100%", md: "190px" }}
@@ -175,7 +178,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
           leftIcon={<AddIcon />}
           onClick={() => setIsModalOpen(true)}
         >
-          <Box>Agregar Producto</Box>
+          <Box>Agregar Equipo</Box>
         </Button>
       </Flex>
       <Flex
@@ -195,7 +198,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
             <CardHeader>
               <Flex justify="space-between" align="center">
                 <Text fontSize="20px" fontWeight="bold">
-                  Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
+                  iPhones {tipoCelulares === "nuevos" ? "Sellados" : "Usados"}
                 </Text>
                 <ButtonGroup isAttached size="sm">
                   <Button
@@ -296,9 +299,9 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                               <Text>
                                 <strong>Minorista:</strong> ${producto.minorista}
                               </Text>
-                              {producto.valorNeto !== 0 && (
+                              {/* {producto.valorNeto !== 0 && (
                                 <Text><strong>Valor Neto:</strong>${producto.valorNeto}</Text>
-                              )}
+                              )} */}
                             </Flex>
                           </Td>
                         </Tr>
@@ -314,7 +317,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
             <Flex justify="space-between" align="center" mb={3} wrap="wrap">
               <Flex direction="row" align="center" gap={2}>
                 <Text fontSize={{ base: "18", md: "20px" }} fontWeight="bold">
-                  Celulares {tipoCelulares === "nuevos" ? "Nuevos" : "Usados"}
+                  iPhones {tipoCelulares === "nuevos" ? "Sellados" : "Usados"}
                 </Text>
 
                 {!isMobile2 && (
@@ -370,10 +373,7 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
             {celulares.map((producto: any) => (
               <CardMobileCelular
                 key={producto.id}
-                producto={{
-                  ...producto,
-                  modelo: obtenerNombreModelo(producto.modeloId),
-                }}
+                producto={producto}
                 onEditar={() => handleEditarProducto(producto)}
                 onEliminar={() => {
                   setSelectedProductId(producto.id);
@@ -480,9 +480,9 @@ function Productos({ productos, modelos, onDelete }: ProductosProps) {
                               <Text>
                                 <strong>Minorista:</strong> ${accesorio.minorista}
                               </Text>
-                              {accesorio.valorNeto !== 0 && (
+                              {/* {accesorio.valorNeto !== 0 && (
                                 <Text><strong>Valor Neto:</strong>${accesorio.valorNeto}</Text>
-                              )}
+                              )} */}
                             </Flex>
                           </Td>
                         </Tr>

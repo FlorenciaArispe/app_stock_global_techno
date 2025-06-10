@@ -72,10 +72,9 @@ export type Database = {
           id: number
           mayorista: number
           minorista: number
-          modeloId: number | null
+          modelo: string | null
           nombre: string | null
           stock: number
-          valorNeto: number
         }
         Insert: {
           capacidad?: string | null
@@ -84,10 +83,9 @@ export type Database = {
           id?: number
           mayorista: number
           minorista: number
-          modeloId?: number | null
+          modelo?: string | null
           nombre?: string | null
           stock?: number
-          valorNeto: number
         }
         Update: {
           capacidad?: string | null
@@ -96,10 +94,9 @@ export type Database = {
           id?: number
           mayorista?: number
           minorista?: number
-          modeloId?: number | null
+          modelo?: string | null
           nombre?: string | null
           stock?: number
-          valorNeto?: number
         }
         Relationships: [
           {
@@ -110,8 +107,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Producto_modeloId_fkey"
-            columns: ["modeloId"]
+            foreignKeyName: "Producto_modelo_fkey"
+            columns: ["modelo"]
             isOneToOne: false
             referencedRelation: "Modelo_celular"
             referencedColumns: ["id"]

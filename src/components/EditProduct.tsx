@@ -19,7 +19,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
   const [stock, setStock] = useState<string>("");
-  const [valorNeto, setValorNeto] = useState<string>("");
+  // const [valorNeto, setValorNeto] = useState<string>("");
   const [mayorista, setMayorista] = useState<string>("");
   const [minorista, setMinorista] = useState<string>("");
   const [nombreAccesorio, setNombreAccesorio] = useState("");
@@ -33,11 +33,11 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
     if (producto) {
       const catObj = categorias.find((c: any) => c.id === producto.categoria);
       setCategoriaSeleccionada(catObj?.nombre ?? "");
-      setModelo(producto.modeloId);
+      setModelo(producto.modelo);
       setColor(producto.color);
       setCapacidad(producto.capacidad);
       setStock(producto.stock);
-      setValorNeto(producto.valorNeto);
+      // setValorNeto(producto.valorNeto);
       setMayorista(producto.mayorista);
       setMinorista(producto.minorista);
       setNombreAccesorio(producto.nombre);
@@ -55,11 +55,6 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
     } else {
       setModeloError("");
     }
-  };
-
-  const capitalizarPrimeraLetra = (texto: string) => {
-    if (!texto) return "";
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
   };
 
   const handleGuardar = async () => {
@@ -126,11 +121,11 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
 
     const dataToUpdate: any = {
       categoria: categoriaId,
-      modeloId: modeloFinal,
-      color: capitalizarPrimeraLetra(color),
+      modelo: modeloFinal,
+      color: color,
       capacidad,
       stock,
-      valorNeto: valorNeto ? Number(valorNeto) : 0,
+      // valorNeto: valorNeto ? Number(valorNeto) : 0,
       mayorista,
       minorista,
       nombre: nombreAccesorio,
@@ -210,7 +205,7 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                 <FormLabel>Modelo</FormLabel>
                 <Select value={modelo} onChange={(e) => setModelo(e.target.value)}>
                   {modelos.map((m: any) => (
-                    <option key={m.id} value={m.id}>
+                    <option key={m.id} value={m.nombre}>
                       {m.nombre}
                     </option>
                   ))}
@@ -230,21 +225,25 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                   )}
                 </FormControl>
               )}
-              <FormControl isRequired mb={3} isInvalid={!!errors.color}>
-                <FormLabel>Color</FormLabel>
-                <Input value={color}
-                  onChange={(e) => {
-                    setColor(e.target.value);
-                    setErrors((prev) => ({ ...prev, color: "" }));
-                    if (errors.general) {
-                      setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-                    }
-                  }}
-                />
-                {errors.color && (
-                  <Text color="red.500" fontSize="sm">{errors.color}</Text>
-                )}
-              </FormControl>
+             <FormControl isRequired mb={3} isInvalid={!!errors.color}>
+  <FormLabel>Color</FormLabel>
+  <Input
+    value={color}
+    onChange={(e) => {
+      const upper = e.target.value.toUpperCase();
+      setColor(upper);
+      setErrors((prev) => ({ ...prev, color: "" }));
+      if (errors.general) {
+        setErrors((prevErrors) => ({ ...prevErrors, general: "" }));
+      }
+    }}
+  />
+  {errors.color && (
+    <Text color="red.500" fontSize="sm">
+      {errors.color}
+    </Text>
+  )}
+</FormControl>
               <FormControl isRequired isInvalid={!!errors.capacidad}>
                 <FormLabel>Capacidad</FormLabel>
                 <Select
@@ -314,13 +313,13 @@ function EditProduct({ isOpen, onClose, producto, modelos, productos, fetchProdu
                 </Text>
               )}
             </FormControl>
-            <FormControl mb={3} >
+            {/* <FormControl mb={3} >
               <FormLabel>Valor Neto</FormLabel>
               <Input type="number" value={valorNeto}
                 onChange={(e) => {
                   setValorNeto(e.target.value);
                 }} />
-            </FormControl>
+            </FormControl> */}
           </Flex>
           <Flex gap={2}>
             <FormControl isRequired mb={3} isInvalid={!!errors.mayorista}>

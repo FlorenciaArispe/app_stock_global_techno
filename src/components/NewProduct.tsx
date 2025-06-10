@@ -40,7 +40,7 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
   const [color, setColor] = useState("");
   const [capacidad, setCapacidad] = useState("");
   const [stock, setStock] = useState<string>("");
-  const [valorNeto, setValorNeto] = useState<string>("");
+  // const [valorNeto, setValorNeto] = useState<string>("");
   const [mayorista, setMayorista] = useState<string>("");
   const [minorista, setMinorista] = useState<string>("");
   const [nombreAccesorio, setNombreAccesorio] = useState("");
@@ -56,11 +56,11 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
     let modeloFinal;
     if (modelo === "Otro") {
       const res = await createModelo(modeloOtro)
-      modeloFinal = res;
+      modeloFinal = res.nombre;
     }
     else {
       const modeloObj = modelos.find((mod: any) => mod.nombre === modelo)
-      modeloFinal = modeloObj?.id
+      modeloFinal = modeloObj?.nombre
     }
     const categoriaObj = categorias.find((cat: any) => cat.nombre === categoriaSeleccionada);
     const categoriaId = categoriaObj?.id;
@@ -133,10 +133,10 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
 
     try {
 
-      console.log("IMAGENES", imagenes)
+      console.log("MODELO", modeloFinal)
 
-      const neto = valorNeto ? Number(valorNeto) : 0;
-      const productoId = await createProducto(Number(stock), categoriaId ?? 1, neto, Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
+      // const neto = valorNeto ? Number(valorNeto) : 0;
+      const productoId = await createProducto(Number(stock), categoriaId ?? 1, Number(mayorista), Number(minorista), capacidad, capitalizarPrimeraLetra(color), modeloFinal, nombreAccesorio)
       console.log("ID DE PRODUCTO NUEVO", productoId)
       await fetchProductos()
       onClose();
@@ -273,45 +273,24 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isRequired isInvalid={!!errors.color}>
-                  <FormLabel>Color{categoriaSeleccionada === "Celular Usado" && " y Batería"}</FormLabel>
-                  <Input
-                    value={color}
-                    onChange={(e) => {
-                      setColor(e.target.value);
-                      setErrors((prev) => ({ ...prev, color: "" }));
-                      if (errors.general) {
-                        setErrors(prevErrors => ({ ...prevErrors, general: '' }));
-                      }
-                    }}
-                  />
+                  <FormLabel>Color{categoriaSeleccionada === "iPhone Usado" && " y Batería"}</FormLabel>
+                 <Input
+  textTransform="uppercase" // se ve en mayúsculas
+  value={color}
+  onChange={(e) => {
+    const valor = e.target.value.toUpperCase(); // también lo guarda en mayúsculas
+    setColor(valor);
+    setErrors((prev) => ({ ...prev, color: "" }));
+    if (errors.general) {
+      setErrors(prevErrors => ({ ...prevErrors, general: '' }));
+    }
+  }}
+/>
                   {errors.color && (
                     <Text color="red.500" fontSize="sm">{errors.color}</Text>
                   )}
                 </FormControl>
-                <FormControl isRequired isInvalid={!!errors.capacidad}>
-                  <FormLabel>Capacidad</FormLabel>
-                  <Select
-                    placeholder="Selecciona "
-                    value={capacidad}
-                    onChange={(e) => {
-                      setCapacidad(e.target.value);
-                      setErrors((prev) => ({ ...prev, capacidad: "" }));
-                      if (errors.general) {
-
-                        setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
-                      }
-                    }}
-                  >
-                    {capacidades.map((opcion: Capacidad) => (
-                      <option key={opcion.id} value={opcion.nombre}>
-                        {opcion.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                  {errors.capacidad && (
-                    <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
-                  )}
-                </FormControl>
+               
               </Flex>
             </>
           )}
@@ -352,13 +331,37 @@ function NewProduct({ isOpen, onClose, productos, modelos }: NewProductProps) {
                     </Text>
                   )}
                 </FormControl>
-                <FormControl>
+                 <FormControl isRequired isInvalid={!!errors.capacidad}>
+                  <FormLabel>Capacidad</FormLabel>
+                  <Select
+                    placeholder="Selecciona "
+                    value={capacidad}
+                    onChange={(e) => {
+                      setCapacidad(e.target.value);
+                      setErrors((prev) => ({ ...prev, capacidad: "" }));
+                      if (errors.general) {
+
+                        setErrors((prevErrors) => ({ ...prevErrors, general: '' }));
+                      }
+                    }}
+                  >
+                    {capacidades.map((opcion: Capacidad) => (
+                      <option key={opcion.id} value={opcion.nombre}>
+                        {opcion.nombre}
+                      </option>
+                    ))}
+                  </Select>
+                  {errors.capacidad && (
+                    <Text color="red.500" fontSize="sm">{errors.capacidad}</Text>
+                  )}
+                </FormControl>
+                {/* <FormControl>
                   <FormLabel>Valor Neto</FormLabel>
                   <Input type="number" value={valorNeto} onChange={(e) => {
                     setValorNeto(e.target.value);
 
                   }} />
-                </FormControl>
+                </FormControl> */}
               </Flex>
               <Flex flexDirection={"row"} gap={6} mb={4}>
                 <FormControl isRequired isInvalid={!!errors.minorista}>

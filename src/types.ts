@@ -4,7 +4,6 @@ export interface Producto {
     capacidad: string;
     categoria: number;
     color: string;
-    valorNeto: number;
     minorista: number;
     mayorista: number;
     modeloId: number;

@@ -4,8 +4,8 @@ export interface Categoria {
   }
   
   export const categorias: Categoria[] = [
-    { id: 1, nombre: "Celular Nuevo" },
-    { id: 2, nombre: "Celular Usado" },
+    { id: 1, nombre: "iPhone Nuevo" },
+    { id: 2, nombre: "iPhone Usado" },
     { id: 3, nombre: "Accesorio" },
   ];
 

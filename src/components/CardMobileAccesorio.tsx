@@ -65,9 +65,9 @@ export const CardMobileAccesorio = ({ accesorio, onEditar, onEliminar, onExpandi
       {expandido && (
         <Flex mt={1} p={2} borderRadius="md" flexDirection={{ base: "column", md: "row" }} gap={1}>
         <Text><strong>Mayorista:</strong> ${accesorio.mayorista} <strong> Minorista:</strong> ${accesorio.minorista}</Text>
-        {accesorio.valorNeto !== 0 && (
+        {/* {accesorio.valorNeto !== 0 && (
           <Text><strong>Valor Neto:</strong>${accesorio.valorNeto}</Text>
-        )}
+        )} */}
           
         </Flex>
       )}
